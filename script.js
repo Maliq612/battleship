@@ -717,7 +717,11 @@ class Game {
     }
   }
 
-  /** Purple raindrops streak down the screen like a window, then run off. */
+  /**
+   * Foggy-glass rain transition: a purple mist veils the screen, tiny droplets
+   * cling like condensation, and larger rivulets slide down leaving trails
+   * before everything runs off the bottom and clears.
+   */
   playRainTransition() {
     const existing = document.querySelector(".rain-overlay");
     if (existing) existing.remove();
@@ -726,25 +730,47 @@ class Game {
     overlay.className = "rain-overlay";
     overlay.setAttribute("aria-hidden", "true");
 
-    const count = 80;
     let maxEnd = 0;
-    for (let i = 0; i < count; i++) {
+
+    // Condensation: many small droplets scattered across the whole pane.
+    const speckCount = 140;
+    for (let i = 0; i < speckCount; i++) {
+      const speck = document.createElement("span");
+      speck.className = "rain-speck";
+      const delay = Math.random() * 1.3;
+      const dur = 1.8 + Math.random() * 1.9;
+      speck.style.setProperty("--x", (Math.random() * 100).toFixed(2) + "vw");
+      speck.style.setProperty("--y", (Math.random() * 96).toFixed(2) + "vh");
+      speck.style.setProperty("--d", (2 + Math.random() * 6).toFixed(1) + "px");
+      speck.style.setProperty("--delay", delay.toFixed(2) + "s");
+      speck.style.setProperty("--dur", dur.toFixed(2) + "s");
+      overlay.appendChild(speck);
+      maxEnd = Math.max(maxEnd, delay + dur);
+    }
+
+    // Rivulets: larger drops that start scattered and slide off the bottom.
+    const runnerCount = 38;
+    for (let i = 0; i < runnerCount; i++) {
       const drop = document.createElement("span");
       drop.className = "raindrop";
-      const delay = Math.random() * 0.9;
-      const dur = 1.1 + Math.random() * 1.4;
+      const delay = Math.random() * 0.8;
+      const dur = 1.6 + Math.random() * 1.6;
       drop.style.setProperty("--x", (Math.random() * 100).toFixed(2) + "vw");
-      drop.style.setProperty("--w", (3 + Math.random() * 5).toFixed(1) + "px");
-      drop.style.setProperty("--h", (60 + Math.random() * 150).toFixed(0) + "px");
-      drop.style.setProperty("--o", (0.45 + Math.random() * 0.4).toFixed(2));
+      drop.style.setProperty("--w", (5 + Math.random() * 6).toFixed(1) + "px");
+      drop.style.setProperty("--h", (80 + Math.random() * 180).toFixed(0) + "px");
+      drop.style.setProperty("--start-y", (Math.random() * 80 - 20).toFixed(1) + "vh");
+      drop.style.setProperty("--o", (0.5 + Math.random() * 0.4).toFixed(2));
+      drop.style.setProperty("--drift", (3 + Math.random() * 9).toFixed(1) + "px");
+      drop.style.setProperty("--wob-dur", (1.4 + Math.random() * 1.8).toFixed(2) + "s");
       drop.style.setProperty("--delay", delay.toFixed(2) + "s");
       drop.style.setProperty("--dur", dur.toFixed(2) + "s");
       overlay.appendChild(drop);
       maxEnd = Math.max(maxEnd, delay + dur);
     }
 
+    overlay.style.setProperty("--fog-dur", maxEnd.toFixed(2) + "s");
     document.body.appendChild(overlay);
-    setTimeout(() => overlay.remove(), (maxEnd + 0.25) * 1000);
+    setTimeout(() => overlay.remove(), (maxEnd + 0.3) * 1000);
   }
 
   setDifficulty(value) {

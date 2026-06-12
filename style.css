@@ -486,6 +486,57 @@ h2 {
   z-index: 1300;
 }
 
+/* Frosted-glass veil: a soft purple mist over the whole pane that fades in then out. */
+.rain-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(120, 80, 185, 0.22),
+    rgba(80, 50, 145, 0.12)
+  );
+  backdrop-filter: blur(1.6px);
+  -webkit-backdrop-filter: blur(1.6px);
+  opacity: 0;
+  animation: rain-fog var(--fog-dur, 3s) ease-in-out forwards;
+}
+
+@keyframes rain-fog {
+  0% { opacity: 0; }
+  14% { opacity: 1; }
+  68% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Tiny droplets clinging to the glass (condensation). */
+.rain-speck {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--d);
+  height: calc(var(--d) * 1.15);
+  border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%;
+  background: radial-gradient(
+    circle at 38% 30%,
+    rgba(244, 236, 255, 0.95),
+    rgba(160, 116, 230, 0.7) 55%,
+    rgba(110, 70, 200, 0.32) 100%
+  );
+  box-shadow: 0 0 3px rgba(150, 90, 230, 0.45),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  animation: speck-life var(--dur) ease-in-out var(--delay) forwards;
+}
+
+@keyframes speck-life {
+  0% { opacity: 0; transform: translateY(0) scale(0.55); }
+  22% { opacity: 1; transform: translateY(0) scale(1); }
+  68% { opacity: 1; transform: translateY(6px) scale(1); }
+  100% { opacity: 0; transform: translateY(46px) scale(0.9); }
+}
+
+/* Larger rivulets that slide down the pane leaving a faint trailing streak. */
 .raindrop {
   position: absolute;
   top: 0;
@@ -493,17 +544,17 @@ h2 {
   width: var(--w);
   height: var(--h);
   opacity: 0;
-  transform: translateY(-40vh);
-  /* faint trailing streak of water left behind as the drop runs down */
   border-radius: 50%;
+  transform: translateY(var(--start-y, -40vh));
   background: linear-gradient(
     to bottom,
-    rgba(170, 120, 235, 0) 0%,
-    rgba(170, 120, 235, calc(var(--o) * 0.32)) 80%,
-    rgba(170, 120, 235, 0) 100%
+    rgba(178, 132, 240, 0) 0%,
+    rgba(178, 132, 240, calc(var(--o) * 0.5)) 84%,
+    rgba(178, 132, 240, 0) 100%
   );
-  filter: drop-shadow(0 0 3px rgba(150, 90, 230, 0.4));
-  animation: rain-run var(--dur) cubic-bezier(0.45, 0.05, 0.6, 1) var(--delay) forwards;
+  filter: drop-shadow(0 0 4px rgba(150, 90, 230, 0.55));
+  animation: rain-run var(--dur) cubic-bezier(0.5, 0.08, 0.7, 1) var(--delay) forwards,
+    rain-wobble var(--wob-dur, 2s) ease-in-out var(--delay) infinite alternate;
 }
 
 /* The droplet itself: a teardrop with a rounded bottom tapering to a point on top. */
@@ -528,13 +579,13 @@ h2 {
 
 @keyframes rain-run {
   0% {
-    transform: translateY(-40vh);
+    transform: translateY(var(--start-y, -40vh));
     opacity: 0;
   }
-  12% {
+  10% {
     opacity: 1;
   }
-  82% {
+  85% {
     opacity: 1;
   }
   100% {
@@ -543,8 +594,16 @@ h2 {
   }
 }
 
+/* Gentle horizontal meander as the rivulet runs down. */
+@keyframes rain-wobble {
+  0% { margin-left: calc(var(--drift, 4px) * -1); }
+  100% { margin-left: var(--drift, 4px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .raindrop {
+  .raindrop,
+  .rain-speck,
+  .rain-overlay::before {
     animation: none;
     display: none;
   }
