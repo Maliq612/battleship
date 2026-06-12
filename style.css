@@ -251,7 +251,7 @@ body.phase-place .radar-overlay {
 
 .logo-img {
   display: block;
-  width: min(680px, 90vw);
+  width: min(1020px, calc(100vw - 186px - 3rem));
   height: auto;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
 }
