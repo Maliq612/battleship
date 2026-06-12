@@ -200,30 +200,28 @@ header {
   font-size: clamp(4.6rem, 16vw, 8rem);
   line-height: 1;
   letter-spacing: 0.01em;
-  /* yellow -> orange metallic fill */
+  /* Solid dark base: provides the 2px outline + bevel/drop shadow.
+     The gradient face is layered on top via ::after. Splitting them this
+     way avoids the WebKit bug where -webkit-text-stroke + background-clip:
+     text punches a gap through tight curves (the bowl of the "P"). */
+  color: #7c1208;
+  -webkit-text-fill-color: #7c1208;
+  -webkit-text-stroke: 2px #7c1208;
+  filter: drop-shadow(2px 3px 0 #7c1208) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+}
+
+/* yellow -> orange metallic fill, laid over the base with no stroke so
+   every letter (including the "P") is fully filled in */
+.logo-title::after {
+  content: "BATTLESHIP";
+  position: absolute;
+  left: 0;
+  top: 0;
   background: linear-gradient(#fff3b0 12%, #ffd23f 38%, #ff8c1a 70%, #e85d04 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  /* soft cast shadow under the whole wordmark */
-  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.6));
-}
-
-/* Dark red outline + bevel rendered as a solid duplicate BEHIND the
-   gradient face. Keeping the stroke off the gradient layer avoids the
-   WebKit bug where -webkit-text-stroke + background-clip:text punches a
-   gap through tight curves (e.g. the bowl of the "P"). */
-.logo-title::before {
-  content: "BATTLESHIP";
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: -1;
-  color: #7c1208;
-  -webkit-text-fill-color: #7c1208;
-  -webkit-text-stroke: 4px #7c1208;
-  transform: translate(3px, 4px);
 }
 
 .logo-tagline {
