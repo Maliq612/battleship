@@ -417,6 +417,12 @@ h2 {
   background: radial-gradient(circle at 38% 32%, var(--peg-red-hi), var(--peg-red) 60%, var(--peg-red-lo));
 }
 
+/* A sunk ship's cells turn red. The tile is a lighter red than the pegs so
+   the darker hit pegs still read clearly against it. */
+.cell.sunk {
+  background: linear-gradient(160deg, #ff9e90, #f4715f 58%, #e2533f);
+}
+
 .cell.sunk::after {
   background: radial-gradient(circle at 38% 32%, #c0392b, var(--peg-sunk) 60%, #3d0f0a);
 }
