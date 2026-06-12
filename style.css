@@ -51,8 +51,10 @@ body {
   background-image:
     radial-gradient(circle at 50% -8%, rgba(125, 145, 158, 0.20), rgba(0, 0, 0, 0.55) 72%),
     var(--plate);
-  background-size: auto, 520px auto;
-  background-attachment: fixed;
+  background-size: auto, cover;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  background-attachment: fixed, fixed;
 }
 
 /* ---------------- Logo / header ---------------- */
@@ -190,7 +192,9 @@ h2 {
   align-items: center;
   background-color: #2b3137;
   background-image: var(--plate);
-  background-size: 340px auto;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 12px 14px 14px;
   border-radius: 10px;
   border: 1px solid #11151800;
@@ -388,7 +392,9 @@ h2 {
 .placement {
   background-color: #2b3137;
   background-image: var(--plate);
-  background-size: 340px auto;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 12px;
   padding: 1rem 1.3rem 1.3rem;
   text-align: center;
