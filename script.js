@@ -734,8 +734,8 @@ class Game {
       const delay = Math.random() * 0.9;
       const dur = 1.1 + Math.random() * 1.4;
       drop.style.setProperty("--x", (Math.random() * 100).toFixed(2) + "vw");
-      drop.style.setProperty("--w", (5 + Math.random() * 13).toFixed(1) + "px");
-      drop.style.setProperty("--h", (55 + Math.random() * 170).toFixed(0) + "px");
+      drop.style.setProperty("--w", (3 + Math.random() * 5).toFixed(1) + "px");
+      drop.style.setProperty("--h", (60 + Math.random() * 150).toFixed(0) + "px");
       drop.style.setProperty("--o", (0.45 + Math.random() * 0.4).toFixed(2));
       drop.style.setProperty("--delay", delay.toFixed(2) + "s");
       drop.style.setProperty("--dur", dur.toFixed(2) + "s");

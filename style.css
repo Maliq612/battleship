@@ -512,9 +512,9 @@ h2 {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: calc(var(--w) * 2.1);
-  height: calc(var(--w) * 2.1);
-  transform: translate(-50%, 20%) rotate(45deg);
+  width: calc(var(--w) * 1.7);
+  height: calc(var(--w) * 1.7);
+  transform: translate(-50%, 18%) rotate(45deg);
   border-radius: 0 50% 50% 50%;
   background: radial-gradient(
     circle at 35% 32%,
