@@ -25,7 +25,24 @@
   <header>
     <div class="logo">
       <div class="logo-banner">
-        <h1 class="logo-title">BATTLESHIP</h1>
+        <h1 class="logo-title" aria-label="Battleship">
+          <svg class="logo-svg" viewBox="0 0 1040 210" role="img" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="bs-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="12%" stop-color="#fff3b0" />
+                <stop offset="38%" stop-color="#ffd23f" />
+                <stop offset="70%" stop-color="#ff8c1a" />
+                <stop offset="100%" stop-color="#e85d04" />
+              </linearGradient>
+            </defs>
+            <g font-family="'Russo One', sans-serif" font-style="italic" font-weight="900"
+               font-size="120" letter-spacing="1" text-anchor="middle">
+              <text class="bs-bevel" x="523" y="161" fill="#7c1208">BATTLESHIP</text>
+              <text class="bs-face" x="520" y="158" fill="url(#bs-fill)" stroke="#7c1208"
+                    stroke-width="5" stroke-linejoin="round" paint-order="stroke">BATTLESHIP</text>
+            </g>
+          </svg>
+        </h1>
       </div>
       <p class="logo-tagline">The Classic Naval Combat Game</p>
     </div>

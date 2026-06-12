@@ -63,6 +63,14 @@ class AudioController {
     this.music.volume = 0.45;
     this.music.preload = "auto";
 
+    this.winMusic = new Audio("assets/champions.mp3");
+    this.winMusic.volume = 0.7;
+    this.winMusic.preload = "auto";
+
+    this.loseMusic = new Audio("assets/sad-trombone.mp3");
+    this.loseMusic.volume = 0.8;
+    this.loseMusic.preload = "auto";
+
     this.sfxSrc = {
       splash: "assets/splash.wav",
       explosion: "assets/explosion.wav",
@@ -130,10 +138,38 @@ class AudioController {
     this.music.pause();
   }
 
+  /** Celebratory track for the win screen (replaces background music). */
+  playWin() {
+    this.stopMusic();
+    if (!this.musicOn) return;
+    this.winMusic.currentTime = 0;
+    const p = this.winMusic.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  }
+
+  /** Sad-trombone sting for the lose screen (replaces background music). */
+  playLose() {
+    this.stopMusic();
+    if (!this.musicOn) return;
+    this.loseMusic.currentTime = 0;
+    const p = this.loseMusic.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  }
+
+  stopEndMusic() {
+    this.winMusic.pause();
+    this.winMusic.currentTime = 0;
+    this.loseMusic.pause();
+    this.loseMusic.currentTime = 0;
+  }
+
   setMusic(on) {
     this.musicOn = on;
     if (on) this.startMusic();
-    else this.stopMusic();
+    else {
+      this.stopMusic();
+      this.stopEndMusic();
+    }
   }
 
   setSfx(on) {
@@ -427,6 +463,7 @@ class Game {
   }
 
   start() {
+    this.audio.stopEndMusic();
     this.enemyBoard.hideShips = true;
     this.enemyBoard.reset();
     this.enemyBoard.buildDom();
@@ -667,7 +704,11 @@ class Game {
     this.renderFleets();
 
     this.audio.stopMusic();
-    this.audio.fanfare(playerWon);
+    if (playerWon) {
+      this.audio.playWin();
+    } else {
+      this.audio.playLose();
+    }
 
     this.otter.classList.toggle("win", playerWon);
     this.otter.classList.toggle("lose", !playerWon);
