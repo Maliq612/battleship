@@ -28,6 +28,8 @@
   --label: #9fb6c4;
 
   --display: "Russo One", "Arial Black", Impact, sans-serif;
+
+  --plate: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2246%22%20height%3D%2246%22%20viewBox%3D%220%200%2046%2046%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%233c4248%22%2F%3E%3Cstop%20offset%3D%220.5%22%20stop-color%3D%22%232c3136%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2323272b%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%235b646c%22%2F%3E%3Cstop%20offset%3D%220.45%22%20stop-color%3D%22%23444c53%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%231c2024%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2246%22%20height%3D%2246%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cg%3E%3Cg%20transform%3D%22translate%2811.5%2C11.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.55%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2834.5%2C34.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.55%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2834.5%2C11.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.5%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2811.5%2C34.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.5%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 
 * {
@@ -48,7 +50,7 @@ body {
   background-color: #23272b;
   background-image:
     radial-gradient(circle at 50% -8%, rgba(125, 145, 158, 0.20), rgba(0, 0, 0, 0.55) 72%),
-    url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2246%22%20height%3D%2246%22%20viewBox%3D%220%200%2046%2046%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22b%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%233c4248%22%2F%3E%3Cstop%20offset%3D%220.5%22%20stop-color%3D%22%232c3136%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2323272b%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22s%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%235b646c%22%2F%3E%3Cstop%20offset%3D%220.45%22%20stop-color%3D%22%23444c53%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%231c2024%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2246%22%20height%3D%2246%22%20fill%3D%22url%28%23b%29%22%2F%3E%3Cg%3E%3Cg%20transform%3D%22translate%2811.5%2C11.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.55%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2834.5%2C34.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.55%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2834.5%2C11.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.5%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2811.5%2C34.5%29%20rotate%2845%29%22%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%2214%22%20rx%3D%222.5%22%20fill%3D%22url%28%23s%29%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%22-7%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%23727b83%22%20opacity%3D%220.5%22%2F%3E%3Crect%20x%3D%22-7%22%20y%3D%223.8%22%20width%3D%2214%22%20height%3D%223.2%22%20rx%3D%221.6%22%20fill%3D%22%230e1216%22%20opacity%3D%220.6%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+    var(--plate);
   background-size: auto, 46px 46px;
   background-attachment: fixed;
 }
@@ -148,16 +150,25 @@ header {
 /* ---------------- Layout ---------------- */
 main {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2.5rem;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
 }
 
 .board-section {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+}
+
+.board-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 h2 {
@@ -171,15 +182,21 @@ h2 {
 }
 
 /* ---------------- Board + coordinate labels ---------------- */
+/* The board-area is a diamond-plate metal frame around the water grid. */
 .board-area {
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
   align-items: center;
-  background: linear-gradient(var(--steel-light), var(--steel-dark));
-  padding: 10px 12px 12px;
+  background-color: #2b3137;
+  background-image: var(--plate);
+  background-size: 46px 46px;
+  padding: 12px 14px 14px;
   border-radius: 10px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border: 1px solid #11151800;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.35);
 }
 
 .corner {
@@ -212,66 +229,52 @@ h2 {
   justify-content: center;
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--label);
+  color: #d8e6ef;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
+/* Water grid: dark grid lines (the board bg) show through the cell gaps. */
 .board {
+  position: relative;
   grid-column: 2;
   grid-row: 2;
   display: grid;
   grid-template-columns: repeat(10, var(--cell-size));
   grid-template-rows: repeat(10, var(--cell-size));
   gap: var(--gap);
-  background: linear-gradient(var(--board-blue-light), var(--board-blue));
+  background: #0b2f45;
   padding: var(--gap);
-  border-radius: 6px;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.7), 0 0 0 2px #060f17;
 }
 
-/* Each cell is a recessed hole in the plastic board */
+/* Each cell is a translucent water tile. */
 .cell {
   position: relative;
   width: var(--cell-size);
   height: var(--cell-size);
-  background: transparent;
   border: none;
   padding: 0;
   cursor: default;
-}
-
-.cell::before {
-  content: "";
-  position: absolute;
-  inset: 22%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #20455a, var(--hole-dark));
-  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.board.enemy .cell:not(.fired):hover::before {
-  background: radial-gradient(circle at 40% 35%, #2c6c8c, #123243);
-  cursor: crosshair;
+  background: linear-gradient(160deg, #1f74a1 0%, #15597f 55%, #0f4a6b 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .board.enemy .cell:not(.fired):hover {
+  background: linear-gradient(160deg, #2b94c6, #1c6f9c);
   cursor: crosshair;
 }
 
-/* Gray plastic ship segment (player board) */
-.cell.ship {
-  background: linear-gradient(145deg, var(--ship-light), var(--ship));
-  border-radius: 5px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Pegs sit in the holes */
+/* Marker pegs sit on the water tile: red = hit, white = miss. */
 .cell.hit::after,
 .cell.sunk::after,
 .cell.miss::after {
   content: "";
   position: absolute;
-  inset: 17%;
+  inset: 20%;
   border-radius: 50%;
+  z-index: 2;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.55), inset -1px -2px 3px rgba(0, 0, 0, 0.4),
     inset 1px 2px 3px rgba(255, 255, 255, 0.35);
 }
@@ -290,15 +293,192 @@ h2 {
 
 .cell.fired {
   cursor: not-allowed;
+  z-index: 5;
 }
 
-/* ---------------- Fleet status ---------------- */
+/* Placement preview highlight */
+.cell.preview-ok {
+  background: linear-gradient(160deg, #4caf6e, #2e7d4f);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.cell.preview-bad {
+  background: linear-gradient(160deg, #d8534f, #a33330);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+/* ---------------- Ship graphics (overlay) ---------------- */
+.ship-layer {
+  position: absolute;
+  inset: var(--gap);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ship-graphic {
+  position: absolute;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #98a2ab 0%, #6b757e 45%, #4a535b 100%);
+  border: 1px solid #2a3036;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55), 0 2px 5px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+/* deck stripe */
+.ship-graphic::before {
+  content: "";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 4px;
+}
+
+.ship-graphic.horizontal::before {
+  inset: 38% 12%;
+}
+
+.ship-graphic.vertical::before {
+  inset: 12% 38%;
+}
+
+/* bridge / turret bump */
+.ship-graphic::after {
+  content: "";
+  position: absolute;
+  width: 34%;
+  height: 34%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #b6bfc6, #707a82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.ship-graphic.sunk {
+  background: linear-gradient(180deg, #9a4a44, #6e2a26 55%, #4a1714 100%);
+  filter: grayscale(0.2) brightness(0.85);
+}
+
+/* ---------------- Stats ---------------- */
+.stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 0 0.8rem;
+}
+
+.stats span {
+  background: linear-gradient(var(--steel), var(--steel-dark));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: #cdd9e1;
+}
+
+.stats strong {
+  color: #ffd23f;
+  font-size: 0.95rem;
+}
+
+/* ---------------- Placement / shipyard ---------------- */
+.placement {
+  background-color: #2b3137;
+  background-image: var(--plate);
+  background-size: 46px 46px;
+  border-radius: 12px;
+  padding: 1rem 1.3rem 1.3rem;
+  text-align: center;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  max-width: 560px;
+}
+
+.placement .hint {
+  margin: 0.2rem 0 1rem;
+  font-size: 0.9rem;
+  color: #cdd9e1;
+}
+
+.placement kbd {
+  background: #11161a;
+  border: 1px solid #3c454c;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: monospace;
+  color: #ffd23f;
+}
+
+.shipyard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.shipyard-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(var(--steel-light), var(--steel-dark));
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-family: "Trebuchet MS", sans-serif;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  text-shadow: none;
+}
+
+.shipyard-item.selected {
+  border-color: #ffd23f;
+  box-shadow: 0 0 0 2px rgba(255, 210, 63, 0.4), 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.shipyard-item .ship-graphic {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.shipyard-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.shipyard-done {
+  margin: 0.5rem 0;
+  color: #ffd23f;
+  font-weight: 700;
+}
+
+.placement-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.placement-controls button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* ---------------- Fleet roster (silhouettes) ---------------- */
 .fleet {
   list-style: none;
   padding: 0.6rem 0.8rem;
-  margin: 1rem 0 0;
-  width: 100%;
-  max-width: calc(10 * var(--cell-size) + 9 * var(--gap) + 40px);
+  margin: 0;
+  min-width: 200px;
+  align-self: stretch;
   background: linear-gradient(var(--steel), var(--steel-dark));
   border-radius: 8px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -306,11 +486,11 @@ h2 {
 
 .fleet li {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  gap: 0.6rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.3rem 0.2rem;
+  padding: 0.38rem 0.2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -318,22 +498,234 @@ h2 {
   border-bottom: none;
 }
 
+.ship-silhouette {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.ship-silhouette .seg {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #8a949d, #59636c);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.ship-silhouette .seg.hit-seg {
+  background: linear-gradient(180deg, #ff7361, var(--peg-red));
+}
+
 .fleet li.sunk-ship {
   color: #ff7361;
-  text-decoration: line-through;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
-.fleet li .pegs {
-  letter-spacing: 0.12em;
-  font-size: 0.95rem;
-  color: var(--peg-red);
+.fleet li.sunk-ship .ship-silhouette .seg {
+  background: linear-gradient(180deg, #c0392b, var(--peg-sunk));
 }
 
-.fleet li.sunk-ship .pegs {
-  color: #ff7361;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+.ship-name {
+  white-space: nowrap;
+}
+
+/* ---------------- Splash / explosion effects ---------------- */
+.fx-splash,
+.fx-explosion {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.fx-splash {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(180, 220, 240, 0.6) 35%, rgba(255, 255, 255, 0) 70%);
+  animation: splash 0.7s ease-out forwards;
+}
+
+.fx-explosion {
+  background: radial-gradient(circle, #fff6c0 0%, #ffd23f 25%, #ff7a1a 50%, #d2270f 70%, rgba(210, 39, 15, 0) 80%);
+  animation: explode 0.7s ease-out forwards;
+}
+
+@keyframes splash {
+  0% { transform: scale(0.2); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes explode {
+  0% { transform: scale(0.2) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: scale(1.7) rotate(25deg); opacity: 0; }
+}
+
+/* ---------------- Phase visibility ---------------- */
+.phase-place .enemy-section,
+.phase-place #stats {
+  display: none;
+}
+
+.phase-battle #placement,
+.phase-over #placement {
+  display: none;
+}
+
+/* ---------------- Header sound controls ---------------- */
+header {
+  position: relative;
+}
+
+.sound-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  font-family: "Trebuchet MS", sans-serif;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  background: linear-gradient(var(--steel-light), var(--steel-dark));
+  color: #cdd9e1;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.78rem;
+  border-radius: 6px;
+  box-shadow: 0 3px 0 #11161a, 0 4px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: none;
+}
+
+.icon-btn[aria-pressed="false"] {
+  color: #8a969e;
+  filter: saturate(0.5) brightness(0.85);
+}
+
+@media (max-width: 760px) {
+  .sound-controls {
+    position: static;
+    justify-content: center;
+    margin-top: 0.8rem;
+  }
+}
+
+/* ---------------- Otter win/lose mascot ---------------- */
+.otter {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 0.6rem;
+}
+
+.otter img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #ffd23f;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
+/* White naval officer peaked cap drawn with CSS, sitting on the otter's head */
+.otter-cap {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 86px;
+  height: 30px;
+  z-index: 2;
+}
+
+.otter-cap::before {
+  /* crown / band */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 8px;
+  width: 70px;
+  height: 22px;
+  background: linear-gradient(#ffffff, #dfe4e8);
+  border-radius: 16px 16px 4px 4px;
+  box-shadow: inset 0 -6px 0 #14203a, inset 0 2px 0 #fff,
+    0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.otter-cap::after {
+  /* black brim */
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 0;
+  width: 86px;
+  height: 9px;
+  background: linear-gradient(#222b3a, #0c1018);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* gold badge on the cap band */
+.otter::before {
+  content: "\2693"; /* anchor */
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: #d4af37;
+  z-index: 3;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+/* saluting hand (white glove) — appears on win */
+.otter-hand {
+  position: absolute;
+  display: none;
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(#ffffff, #e2e7ea);
+  border: 2px solid #c7ced3;
+  border-radius: 6px 8px 4px 8px;
+  top: 14px;
+  right: 6px;
+  z-index: 4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.otter.win {
+  animation: otter-salute 1.6s ease-in-out infinite;
+}
+
+.otter.win .otter-hand {
+  display: block;
+  animation: hand-salute 1.6s ease-in-out infinite;
+}
+
+.otter.lose {
+  animation: otter-laugh 0.5s ease-in-out infinite;
+}
+
+.otter.lose img {
+  border-color: #ff7361;
+}
+
+@keyframes otter-salute {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-4px) rotate(2deg); }
+}
+
+@keyframes hand-salute {
+  0%, 100% { transform: translateY(2px) rotate(-8deg); }
+  50% { transform: translateY(-2px) rotate(-18deg); }
+}
+
+@keyframes otter-laugh {
+  0%, 100% { transform: translateX(-3px) rotate(-3deg); }
+  50% { transform: translateX(3px) rotate(3deg); }
 }
 
 /* ---------------- Buttons ---------------- */

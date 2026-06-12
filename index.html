@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="phase-place">
   <header>
     <div class="logo">
       <span class="mb-badge"><span class="mb-letters">MB</span><span class="mb-sub">Milton Bradley</span></span>
@@ -18,43 +18,73 @@
       </div>
       <p class="logo-tagline">The Classic Naval Combat Game</p>
     </div>
-    <p id="status" class="status">Your turn &mdash; click a cell on the enemy waters to fire.</p>
+    <p id="status" class="status">Position your fleet to begin.</p>
+    <div class="sound-controls">
+      <button id="toggle-music" type="button" class="icon-btn" aria-pressed="true" title="Toggle music">&#9835; Music: On</button>
+      <button id="toggle-sfx" type="button" class="icon-btn" aria-pressed="true" title="Toggle sound effects">&#128266; SFX: On</button>
+    </div>
   </header>
 
   <main>
-    <section class="board-section">
-      <h2>Enemy Waters</h2>
-      <div class="board-area">
-        <span class="corner"></span>
-        <div class="col-labels">
-          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
-        </div>
-        <div class="row-labels">
-          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-        </div>
-        <div id="enemy-board" class="board" aria-label="Enemy board"></div>
+    <section id="placement" class="placement">
+      <h2>Position Your Fleet</h2>
+      <p class="hint">Click a ship below, then click your grid to drop it. Press <kbd>R</kbd> or <em>Rotate</em> to turn it.</p>
+      <div id="shipyard" class="shipyard"></div>
+      <div class="placement-controls">
+        <button id="rotate" type="button">Rotate (R)</button>
+        <button id="randomize" type="button">Randomize</button>
+        <button id="clear" type="button">Clear</button>
+        <button id="start-battle" type="button" disabled>Start Battle</button>
       </div>
-      <ul id="enemy-fleet" class="fleet" aria-label="Enemy fleet status"></ul>
     </section>
 
-    <section class="board-section">
-      <h2>Your Fleet</h2>
-      <div class="board-area">
-        <span class="corner"></span>
-        <div class="col-labels">
-          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
-        </div>
-        <div class="row-labels">
-          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-        </div>
-        <div id="player-board" class="board" aria-label="Your board"></div>
+    <section class="board-section enemy-section">
+      <h2>Enemy Waters</h2>
+      <div id="stats" class="stats">
+        <span>Shots: <strong id="stat-shots">0</strong></span>
+        <span>Hits: <strong id="stat-hits">0</strong></span>
+        <span>Hit rate: <strong id="stat-rate">&mdash;</strong></span>
       </div>
-      <ul id="player-fleet" class="fleet" aria-label="Your fleet status"></ul>
+      <div class="board-layout">
+        <div class="board-area">
+          <span class="corner"></span>
+          <div class="col-labels">
+            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          </div>
+          <div class="row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div id="enemy-board" class="board" aria-label="Enemy board"></div>
+        </div>
+        <ul id="enemy-fleet" class="fleet" aria-label="Enemy fleet status"></ul>
+      </div>
+    </section>
+
+    <section class="board-section player-section">
+      <h2>Your Fleet</h2>
+      <div class="board-layout">
+        <div class="board-area">
+          <span class="corner"></span>
+          <div class="col-labels">
+            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          </div>
+          <div class="row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div id="player-board" class="board" aria-label="Your board"></div>
+        </div>
+        <ul id="player-fleet" class="fleet" aria-label="Your fleet status"></ul>
+      </div>
     </section>
   </main>
 
   <div id="overlay" class="overlay hidden">
     <div class="overlay-card">
+      <div id="otter" class="otter">
+        <img src="assets/otter.jpg" alt="Devin the otter" />
+        <span class="otter-cap" aria-hidden="true"></span>
+        <span class="otter-hand" aria-hidden="true"></span>
+      </div>
       <h2 id="overlay-title">Game Over</h2>
       <p id="overlay-message"></p>
       <button id="play-again" type="button">Play Again</button>
