@@ -662,9 +662,10 @@ class Game {
     for (const ev of kickEvents) document.addEventListener(ev, kickAudio);
     this.princeBtn.addEventListener("click", () => {
       this.audio.resume();
-      this.setPrinceMode(this.princeBtn.getAttribute("aria-pressed") !== "true");
+      const turningOn = this.princeBtn.getAttribute("aria-pressed") !== "true";
+      this.setPrinceMode(turningOn);
       window.scrollTo({ top: 0, behavior: "smooth" });
-      this.playRainTransition();
+      if (turningOn) this.playRainTransition();
     });
 
     const sfx = document.getElementById("toggle-sfx");
