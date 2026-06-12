@@ -204,28 +204,23 @@ header {
   font-size: clamp(4.6rem, 16vw, 8rem);
   line-height: 1;
   letter-spacing: 0.01em;
-  /* Solid dark base: provides the 2px outline + bevel/drop shadow.
-     The gradient face is layered on top via ::after. Splitting them this
-     way avoids the WebKit bug where -webkit-text-stroke + background-clip:
-     text punches a gap through tight curves (the bowl of the "P"). */
-  color: #7c1208;
-  -webkit-text-fill-color: #7c1208;
-  -webkit-text-stroke: 2px #7c1208;
-  filter: drop-shadow(2px 3px 0 #7c1208) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
-}
-
-/* yellow -> orange metallic fill, laid over the base with no stroke so
-   every letter (including the "P") is fully filled in */
-.logo-title::after {
-  content: "BATTLESHIP";
-  position: absolute;
-  left: 0;
-  top: 0;
+  /* The yellow->orange gradient is clipped to the glyphs themselves, so the
+     fill follows every curve (including the P's bowl). The dark-red outline
+     and bevel are built from stacked drop-shadows instead of
+     -webkit-text-stroke, which on WebKit closes tight inner curves with a
+     flat chord (the old gap in the P). Drop-shadows follow the glyph alpha,
+     so the outline curves with the letter. */
   background: linear-gradient(#fff3b0 12%, #ffd23f 38%, #ff8c1a 70%, #e85d04 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+  filter:
+    drop-shadow(1.5px 0 0 #7c1208) drop-shadow(-1.5px 0 0 #7c1208)
+    drop-shadow(0 1.5px 0 #7c1208) drop-shadow(0 -1.5px 0 #7c1208)
+    drop-shadow(1px 1px 0 #7c1208) drop-shadow(-1px 1px 0 #7c1208)
+    drop-shadow(1px -1px 0 #7c1208) drop-shadow(-1px -1px 0 #7c1208)
+    drop-shadow(2px 3px 0 #7c1208) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
 }
 
 .logo-tagline {
