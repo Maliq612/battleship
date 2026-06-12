@@ -329,7 +329,7 @@ class Game {
       pegs.className = "pegs";
       pegs.textContent = ship.isSunk
         ? "SUNK"
-        : "■".repeat(ship.hits) + "□".repeat(ship.size - ship.hits);
+        : "●".repeat(ship.hits) + "○".repeat(ship.size - ship.hits);
       li.appendChild(name);
       li.appendChild(pegs);
       listEl.appendChild(li);

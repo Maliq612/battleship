@@ -3,25 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Battleship</title>
+  <title>Battleship &mdash; The Classic Naval Combat Game</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Battleship</h1>
+    <div class="logo">
+      <span class="mb-badge"><span class="mb-letters">MB</span><span class="mb-sub">Milton Bradley</span></span>
+      <div class="logo-banner">
+        <h1 class="logo-title">BATTLESHIP</h1>
+      </div>
+      <p class="logo-tagline">The Classic Naval Combat Game</p>
+    </div>
     <p id="status" class="status">Your turn &mdash; click a cell on the enemy waters to fire.</p>
   </header>
 
   <main>
     <section class="board-section">
       <h2>Enemy Waters</h2>
-      <div id="enemy-board" class="board" aria-label="Enemy board"></div>
+      <div class="board-area">
+        <span class="corner"></span>
+        <div class="col-labels">
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+        </div>
+        <div class="row-labels">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+        </div>
+        <div id="enemy-board" class="board" aria-label="Enemy board"></div>
+      </div>
       <ul id="enemy-fleet" class="fleet" aria-label="Enemy fleet status"></ul>
     </section>
 
     <section class="board-section">
       <h2>Your Fleet</h2>
-      <div id="player-board" class="board" aria-label="Your board"></div>
+      <div class="board-area">
+        <span class="corner"></span>
+        <div class="col-labels">
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+        </div>
+        <div class="row-labels">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+        </div>
+        <div id="player-board" class="board" aria-label="Your board"></div>
+      </div>
       <ul id="player-fleet" class="fleet" aria-label="Your fleet status"></ul>
     </section>
   </main>
