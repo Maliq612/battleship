@@ -59,10 +59,11 @@ function boardShipSVG(ship, width, height, horizontal) {
     ? ""
     : ' style="position:absolute;left:50%;top:50%;' +
       'transform:translate(-50%,-50%) rotate(90deg);"';
-  // Tight viewBox around the silhouette's bounds so the (stretched) hull
-  // fills the ship's cells instead of leaving thin slivers.
+  // viewBox cropped to the silhouette's bounds with a little extra margin
+  // below the keel, so the (stretched) hull sits centered in the cells with
+  // an even gap. Rotation maps that bottom gap to the side for vertical ships.
   return (
-    `<svg class="ship-figure" viewBox="2 3 120 31" preserveAspectRatio="none" ` +
+    `<svg class="ship-figure" viewBox="2 2 120 35" preserveAspectRatio="none" ` +
     `width="${w}" height="${h}"${style} aria-hidden="true">` +
     `<path d="${path}" fill="currentColor" /></svg>`
   );
