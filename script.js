@@ -390,9 +390,12 @@ class Board {
  *                neighbours until the wounded ship is sunk.
  *   hard       - medium's hunt logic, plus each *search* shot is a guaranteed
  *                hit 33% of the time (peeking at the board); otherwise random.
- *   impossible - same as hard, but search shots hit 90% of the time.
+ *   impossible - search shots hit 90% of the time, and while hunting it steers
+ *                75% of its shots straight onto an adjacent ship segment.
  */
 const CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0.33, impossible: 0.9 };
+// Chance a *hunt* shot (after a hit) is steered onto a real ship segment.
+const HUNT_CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0, impossible: 0.75 };
 
 class AiPlayer {
   constructor(difficulty = "easy") {
@@ -448,6 +451,14 @@ class AiPlayer {
 
     // Hunt mode: work through cells adjacent to a previous hit first.
     if (this.usesHunt()) {
+      // Impossible steers most hunt shots straight onto a queued ship segment.
+      const huntCheat = HUNT_CHEAT_CHANCE[this.difficulty] || 0;
+      if (huntCheat > 0 && board && this.targetQueue.length && Math.random() < huntCheat) {
+        const i = this.targetQueue.findIndex(
+          (t) => !this.fired[t.row][t.col] && board.grid[t.row][t.col] === CellState.SHIP
+        );
+        if (i !== -1) return this.take(this.targetQueue.splice(i, 1)[0]);
+      }
       while (this.targetQueue.length) {
         const t = this.targetQueue.shift();
         if (!this.fired[t.row][t.col]) return this.take(t);
