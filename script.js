@@ -63,7 +63,7 @@ function boardShipSVG(ship, width, height, horizontal) {
   // below the keel, so the (stretched) hull sits centered in the cells with
   // an even gap. Rotation maps that bottom gap to the side for vertical ships.
   return (
-    `<svg class="ship-figure" viewBox="2 2 120 35" preserveAspectRatio="none" ` +
+    `<svg class="ship-figure" viewBox="2 2 120 39" preserveAspectRatio="none" ` +
     `width="${w}" height="${h}"${style} aria-hidden="true">` +
     `<path d="${path}" fill="currentColor" /></svg>`
   );
@@ -84,9 +84,17 @@ class AudioController {
     this.music.volume = 0.45;
     this.music.preload = "auto";
 
+    // Win screen plays the Champions snippet from 0:39 to 1:16.
+    this.winClip = { start: 39, end: 76 };
     this.winMusic = new Audio("assets/champions.mp3");
     this.winMusic.volume = 0.7;
     this.winMusic.preload = "auto";
+    this.winMusic.addEventListener("timeupdate", () => {
+      if (this.winMusic.currentTime >= this.winClip.end) {
+        this.winMusic.pause();
+        this.winMusic.currentTime = this.winClip.start;
+      }
+    });
 
     this.loseMusic = new Audio("assets/sad-trombone.mp3");
     this.loseMusic.volume = 0.8;
@@ -163,7 +171,7 @@ class AudioController {
   playWin() {
     this.stopMusic();
     if (!this.musicOn) return;
-    this.winMusic.currentTime = 0;
+    this.winMusic.currentTime = this.winClip.start;
     const p = this.winMusic.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
   }
@@ -376,26 +384,107 @@ class Board {
 }
 
 /**
- * Simple AI: fires at random cells it has not fired at yet.
+ * Computer opponent with four difficulty levels:
+ *   easy       - fires at random cells it has not fired at yet.
+ *   medium     - random search, but after a hit it hunts the orthogonal
+ *                neighbours until the wounded ship is sunk.
+ *   hard       - medium's hunt logic, plus each *search* shot is a guaranteed
+ *                hit 33% of the time (peeking at the board); otherwise random.
+ *   impossible - same as hard, but search shots hit 90% of the time.
  */
+const CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0.33, impossible: 0.9 };
+
 class AiPlayer {
-  constructor() {
+  constructor(difficulty = "easy") {
+    this.difficulty = difficulty;
     this.resetTargets();
+  }
+
+  setDifficulty(difficulty) {
+    this.difficulty = difficulty;
   }
 
   resetTargets() {
     this.available = [];
+    this.fired = createMatrix(BOARD_SIZE, false);
     for (let r = 0; r < BOARD_SIZE; r++) {
       for (let c = 0; c < BOARD_SIZE; c++) {
         this.available.push({ row: r, col: c });
       }
     }
+    // Cells queued for "hunt" mode after landing a hit (medium+).
+    this.targetQueue = [];
   }
 
-  nextTarget() {
+  usesHunt() {
+    return this.difficulty !== "easy";
+  }
+
+  /** Pop a position out of the not-yet-fired pool and mark it fired. */
+  take(pos) {
+    this.fired[pos.row][pos.col] = true;
+    const i = this.available.findIndex(
+      (p) => p.row === pos.row && p.col === pos.col
+    );
+    if (i !== -1) this.available.splice(i, 1);
+    return pos;
+  }
+
+  /** A still-unhit ship segment, used by the hard/impossible "cheat". */
+  findUnhitShipCell(board) {
+    const cells = [];
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (board.grid[r][c] === CellState.SHIP && !this.fired[r][c]) {
+          cells.push({ row: r, col: c });
+        }
+      }
+    }
+    return cells.length ? cells[randomInt(cells.length)] : null;
+  }
+
+  nextTarget(board) {
     if (this.available.length === 0) return null;
+
+    // Hunt mode: work through cells adjacent to a previous hit first.
+    if (this.usesHunt()) {
+      while (this.targetQueue.length) {
+        const t = this.targetQueue.shift();
+        if (!this.fired[t.row][t.col]) return this.take(t);
+      }
+    }
+
+    // Search shot: hard/impossible aim straight at a ship a fraction of the time.
+    const cheat = CHEAT_CHANCE[this.difficulty] || 0;
+    if (cheat > 0 && board && Math.random() < cheat) {
+      const known = this.findUnhitShipCell(board);
+      if (known) return this.take(known);
+    }
+
     const index = randomInt(this.available.length);
-    return this.available.splice(index, 1)[0];
+    return this.take(this.available[index]);
+  }
+
+  /** Update hunt state after a shot resolves (medium+). */
+  registerResult(pos, shot) {
+    if (!this.usesHunt() || shot.result !== "hit") return;
+    if (shot.ship && shot.ship.isSunk) {
+      // Ship destroyed: abandon the hunt and go back to searching.
+      this.targetQueue = [];
+      return;
+    }
+    const neighbours = [
+      { row: pos.row - 1, col: pos.col },
+      { row: pos.row + 1, col: pos.col },
+      { row: pos.row, col: pos.col - 1 },
+      { row: pos.row, col: pos.col + 1 },
+    ];
+    for (const n of neighbours) {
+      if (n.row < 0 || n.row >= BOARD_SIZE || n.col < 0 || n.col >= BOARD_SIZE) continue;
+      if (this.fired[n.row][n.col]) continue;
+      if (this.targetQueue.some((q) => q.row === n.row && q.col === n.col)) continue;
+      this.targetQueue.push(n);
+    }
   }
 }
 
@@ -430,6 +519,8 @@ class Game {
     this.phase = Phase.PLACE;
     this.shots = 0;
     this.hits = 0;
+    this.difficulty = "easy";
+    this.difficultyBtns = Array.from(document.querySelectorAll(".difficulty-btn"));
 
     // Placement state
     this.placement = { horizontal: true, selected: null, remaining: [] };
@@ -451,6 +542,10 @@ class Game {
     document.getElementById("randomize").addEventListener("click", () => this.randomizePlacement());
     document.getElementById("clear").addEventListener("click", () => this.clearPlacement());
     document.getElementById("start-battle").addEventListener("click", () => this.startBattle());
+
+    for (const btn of this.difficultyBtns) {
+      btn.addEventListener("click", () => this.setDifficulty(btn.dataset.difficulty));
+    }
 
     document.addEventListener("keydown", (e) => {
       if ((e.key === "r" || e.key === "R") && this.phase === Phase.PLACE) {
@@ -486,6 +581,17 @@ class Game {
     document.body.classList.add("phase-" + phase);
   }
 
+  setDifficulty(value) {
+    if (!CHEAT_CHANCE.hasOwnProperty(value)) return;
+    this.difficulty = value;
+    this.ai.setDifficulty(value);
+    for (const btn of this.difficultyBtns) {
+      const active = btn.dataset.difficulty === value;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", String(active));
+    }
+  }
+
   start() {
     this.audio.stopEndMusic();
     this.enemyBoard.hideShips = true;
@@ -494,6 +600,7 @@ class Game {
     this.playerBoard.reset();
     this.playerBoard.buildDom();
     this.ai.resetTargets();
+    this.ai.setDifficulty(this.difficulty);
     this.enemyBoard.placeFleetRandomly();
 
     this.busy = false;
@@ -677,13 +784,14 @@ class Game {
 
   aiTurn() {
     if (this.phase !== Phase.BATTLE) return;
-    const target = this.ai.nextTarget();
+    const target = this.ai.nextTarget(this.playerBoard);
     if (!target) {
       this.busy = false;
       return;
     }
 
     const shot = this.playerBoard.receiveShot(target.row, target.col);
+    this.ai.registerResult(target, shot);
     const cell = this.playerBoard.cellEls[target.row][target.col];
     this.playEffect(cell, shot.result);
     this.playerBoard.render();
