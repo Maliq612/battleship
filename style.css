@@ -869,6 +869,11 @@ body.prince-mode .board.enemy .cell:not(.fired):hover {
   background: linear-gradient(160deg, #9a6fe0, #6a40b8);
 }
 
+/* Sunk ships still turn light red in Prince Mode (override the purple tile). */
+body.prince-mode .cell.sunk {
+  background: linear-gradient(160deg, #ff9e90, #f4715f 58%, #e2533f);
+}
+
 body.prince-mode .logo-tagline {
   color: #e6d6fb;
 }
