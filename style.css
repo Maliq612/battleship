@@ -45,7 +45,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 1.5rem 1rem 3rem;
-  padding-left: calc(124px + 1rem);
+  padding-left: calc(186px + 1rem);
 
   /* Embossed diamond-plate (tread-plate) steel background */
   background-color: #23272b;
@@ -77,7 +77,7 @@ header {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 124px;
+  width: 186px;
   background: linear-gradient(90deg, #eceded 0%, #d4d6d8 65%, #b7babd 100%);
   border-right: 2px solid #1d1f21;
   box-shadow: 3px 0 10px rgba(0, 0, 0, 0.55);
@@ -85,12 +85,12 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 14px 12px 16px;
+  padding: 21px 18px 24px;
 }
 
 /* Box-style copy down the left rail */
 .rail-copy {
-  margin-top: 18px;
+  margin-top: 27px;
   width: 100%;
   color: #1a1c1e;
   text-align: left;
@@ -99,30 +99,30 @@ header {
 .rail-ages {
   margin: 0;
   font-family: var(--display);
-  font-size: 0.95rem;
+  font-size: 1.43rem;
   line-height: 1.05;
   color: #111;
 }
 
 .rail-objective {
-  margin: 0.55rem 0 0;
+  margin: 0.8rem 0 0;
   font-style: italic;
-  font-size: 0.72rem;
+  font-size: 1.08rem;
   line-height: 1.2;
   color: #2a2c2e;
 }
 
 .rail-players {
-  margin: 0.55rem 0 0;
+  margin: 0.8rem 0 0;
   font-family: var(--display);
-  font-size: 0.85rem;
+  font-size: 1.28rem;
   color: #111;
 }
 
 .rail-company {
   margin: auto 0 0;
   padding-top: 1rem;
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   line-height: 1.35;
   letter-spacing: 0.02em;
   color: #3a3c3e;
@@ -134,37 +134,52 @@ header {
   align-items: center;
   background: #ffffff;
   border: 1px solid #c2c4c6;
-  border-radius: 4px;
-  padding: 7px 8px 6px;
+  border-radius: 5px;
+  padding: 11px 14px 9px;
   line-height: 1;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .mb-letters {
+  position: relative;
   font-family: var(--display);
   font-weight: 900;
-  font-size: 2.6rem;
-  color: #c0392b;
-  letter-spacing: -2px;
+  font-size: 3.9rem;
+  color: #d11e0f;
+  letter-spacing: -3px;
 }
 
-.mb-dot {
-  color: #111;
+.mb-reg {
+  font-size: 0.26em;
+  font-weight: 700;
+  vertical-align: super;
+  margin-left: 1px;
+  color: #d11e0f;
+}
+
+/* thin red rule under the MB, like the box logo */
+.mb-rule {
+  width: 100%;
+  height: 3px;
+  margin: 1px 0 4px;
+  background: #d11e0f;
 }
 
 .mb-sub {
-  margin-top: 2px;
-  font-size: 0.72rem;
+  font-size: 1.04rem;
   font-weight: 700;
-  letter-spacing: -0.2px;
+  letter-spacing: -0.4px;
+  color: #111;
 }
 
 .mb-maliq {
-  color: #c0392b;
+  color: #111;
+  font-weight: 500;
 }
 
 .mb-bradley {
   color: #111;
+  font-weight: 800;
 }
 
 .logo-banner {
