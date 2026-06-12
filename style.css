@@ -818,27 +818,22 @@ header {
 
 .sound-controls {
   position: absolute;
-  top: 0;
+  top: -14px;
   right: 0;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
   gap: 0.5rem;
 }
 
-.sound-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-/* Full-width row beneath Music/SFX (= their combined width), battle-only. */
+/* Prince Mode toggle, in the left rail under "2 Players" (battle only). */
 .prince-btn {
   width: 100%;
-  font-family: "Trebuchet MS", sans-serif;
-  padding: 0.4rem 0.7rem;
-  font-size: 0.78rem;
+  margin-top: 0.9rem;
+  font-family: var(--display);
+  text-transform: uppercase;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 6px;
