@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battleship</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Battleship</h1>
+    <p id="status" class="status">Your turn &mdash; click a cell on the enemy waters to fire.</p>
+  </header>
+
+  <main>
+    <section class="board-section">
+      <h2>Enemy Waters</h2>
+      <div id="enemy-board" class="board" aria-label="Enemy board"></div>
+      <ul id="enemy-fleet" class="fleet" aria-label="Enemy fleet status"></ul>
+    </section>
+
+    <section class="board-section">
+      <h2>Your Fleet</h2>
+      <div id="player-board" class="board" aria-label="Your board"></div>
+      <ul id="player-fleet" class="fleet" aria-label="Your fleet status"></ul>
+    </section>
+  </main>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <h2 id="overlay-title">Game Over</h2>
+      <p id="overlay-message"></p>
+      <button id="play-again" type="button">Play Again</button>
+    </div>
+  </div>
+
+  <footer>
+    <button id="restart" type="button">Restart Game</button>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
