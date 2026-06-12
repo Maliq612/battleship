@@ -615,117 +615,34 @@ header {
 /* ---------------- Otter win/lose mascot ---------------- */
 .otter {
   position: relative;
-  width: 140px;
-  height: 140px;
-  margin: 0 auto 0.6rem;
+  width: 220px;
+  max-width: 60vw;
+  margin: 0 auto 0.4rem;
 }
 
 .otter img {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 4px solid #ffd23f;
-  background: #fff;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
-}
-
-/* White naval officer peaked cap drawn with CSS, sitting on the otter's head */
-.otter-cap {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 86px;
-  height: 30px;
-  z-index: 2;
-}
-
-.otter-cap::before {
-  /* crown / band */
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 8px;
-  width: 70px;
-  height: 22px;
-  background: linear-gradient(#ffffff, #dfe4e8);
-  border-radius: 16px 16px 4px 4px;
-  box-shadow: inset 0 -6px 0 #14203a, inset 0 2px 0 #fff,
-    0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.otter-cap::after {
-  /* black brim */
-  content: "";
-  position: absolute;
-  top: 22px;
-  left: 0;
-  width: 86px;
-  height: 9px;
-  background: linear-gradient(#222b3a, #0c1018);
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
-}
-
-/* gold badge on the cap band */
-.otter::before {
-  content: "\2693"; /* anchor */
-  position: absolute;
-  top: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 13px;
-  color: #d4af37;
-  z-index: 3;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
-}
-
-/* saluting hand (white glove) — appears on win */
-.otter-hand {
-  position: absolute;
-  display: none;
-  width: 26px;
-  height: 26px;
-  background: linear-gradient(#ffffff, #e2e7ea);
-  border: 2px solid #c7ced3;
-  border-radius: 6px 8px 4px 8px;
-  top: 14px;
-  right: 6px;
-  z-index: 4;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
 }
 
 .otter.win {
-  animation: otter-salute 1.6s ease-in-out infinite;
-}
-
-.otter.win .otter-hand {
-  display: block;
-  animation: hand-salute 1.6s ease-in-out infinite;
+  animation: otter-salute 1.8s ease-in-out infinite;
 }
 
 .otter.lose {
   animation: otter-laugh 0.5s ease-in-out infinite;
 }
 
-.otter.lose img {
-  border-color: #ff7361;
-}
-
 @keyframes otter-salute {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-4px) rotate(2deg); }
-}
-
-@keyframes hand-salute {
-  0%, 100% { transform: translateY(2px) rotate(-8deg); }
-  50% { transform: translateY(-2px) rotate(-18deg); }
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-6px) rotate(1.5deg); }
 }
 
 @keyframes otter-laugh {
-  0%, 100% { transform: translateX(-3px) rotate(-3deg); }
-  50% { transform: translateX(3px) rotate(3deg); }
+  0%, 100% { transform: translateX(-4px) rotate(-2deg); }
+  50% { transform: translateX(4px) rotate(2deg); }
 }
 
 /* ---------------- Buttons ---------------- */

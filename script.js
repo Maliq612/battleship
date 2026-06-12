@@ -422,6 +422,7 @@ class Game {
     this.overlayTitle = document.getElementById("overlay-title");
     this.overlayMessage = document.getElementById("overlay-message");
     this.otter = document.getElementById("otter");
+    this.otterImg = document.getElementById("otter-img");
     this.shipyardEl = document.getElementById("shipyard");
     this.statShots = document.getElementById("stat-shots");
     this.statHits = document.getElementById("stat-hits");
@@ -732,6 +733,7 @@ class Game {
 
     this.otter.classList.toggle("win", playerWon);
     this.otter.classList.toggle("lose", !playerWon);
+    this.otterImg.src = playerWon ? "assets/otter-win.png" : "assets/otter-lose.png";
     this.overlayTitle.textContent = playerWon ? "You Win!" : "You Lost!";
     this.overlayMessage.textContent = playerWon
       ? "Admiral Devin salutes you — the enemy fleet is sunk!"
