@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battleship &mdash; The Classic Naval Combat Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="phase-place">
+  <div class="side-rail">
+    <span class="mb-badge">
+      <span class="mb-letters"><span class="mb-m">M</span><span class="mb-b">B</span></span>
+      <span class="mb-sub"><span class="mb-line">MALIQ</span><span class="mb-line">BRADLEY</span></span>
+    </span>
+    <div class="rail-copy">
+      <p class="rail-ages">Adult supervision required for players under 7 years old</p>
+      <p class="rail-objective">Sink all of your opponents ships</p>
+      <p class="rail-players">2 Players</p>
+      <button id="prince-mode" type="button" class="prince-btn" aria-pressed="false" title="Toggle Prince Mode">Prince Mode</button>
+    </div>
+    <p class="rail-company">Product of Maliq Bradley Company<br />San Francisco, CA<br />Made in USA</p>
+  </div>
+  <header>
+    <div class="logo">
+      <h1 class="logo-title"><img class="logo-img" src="assets/logo-battleship.png" alt="BATTLESHIP" /></h1>
+      <p class="logo-tagline">The Classic<br />Naval Combat Game</p>
+    </div>
+    <p id="status" class="status">Position your fleet to begin.</p>
+    <div class="sound-controls">
+      <button id="toggle-music" type="button" class="icon-btn" aria-pressed="true" title="Toggle music">&#9835; Music: On</button>
+      <button id="toggle-sfx" type="button" class="icon-btn" aria-pressed="true" title="Toggle sound effects">&#128266; SFX: On</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="placement" class="placement">
+      <div class="radar-overlay" aria-hidden="true">
+        <div class="radar-rings"></div>
+        <div class="radar-grid"></div>
+        <div class="radar-sweep"></div>
+      </div>
+      <h2>Position Your Fleet</h2>
+      <p class="hint">Click a ship below, then click your grid to drop it. Press <kbd>R</kbd> or <em>Rotate</em> to turn it.</p>
+      <div id="shipyard" class="shipyard"></div>
+      <div class="difficulty">
+        <span class="difficulty-label">Enemy difficulty</span>
+        <div class="difficulty-options" role="radiogroup" aria-label="Enemy difficulty">
+          <button type="button" class="difficulty-btn is-active" data-difficulty="easy" aria-pressed="true">Easy</button>
+          <button type="button" class="difficulty-btn" data-difficulty="medium" aria-pressed="false">Medium</button>
+          <button type="button" class="difficulty-btn" data-difficulty="hard" aria-pressed="false">Hard</button>
+          <button type="button" class="difficulty-btn" data-difficulty="impossible" aria-pressed="false">Impossible</button>
+        </div>
+      </div>
+      <div class="placement-controls">
+        <button id="rotate" type="button">Rotate (R)</button>
+        <button id="randomize" type="button">Randomize</button>
+        <button id="clear" type="button">Restart</button>
+      </div>
+    </section>
+
+    <section class="board-section enemy-section">
+      <h2>Enemy Waters</h2>
+      <div id="stats" class="stats">
+        <span>Shots: <strong id="stat-shots">0</strong></span>
+        <span>Hits: <strong id="stat-hits">0</strong></span>
+        <span>Hit rate: <strong id="stat-rate">&mdash;</strong></span>
+      </div>
+      <div class="board-layout">
+        <div class="board-area">
+          <span class="corner"></span>
+          <div class="col-labels">
+            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          </div>
+          <div class="row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div id="enemy-board" class="board" aria-label="Enemy board"></div>
+        </div>
+        <div class="tracker enemy-tracker">
+          <div class="tracker-head">
+            <span class="tracker-title">ENEMY FLEET</span>
+            <span class="tracker-score">SCORE: <strong id="enemy-score">0</strong></span>
+          </div>
+          <ul id="enemy-fleet" class="fleet fleet-col" aria-label="Enemy fleet status"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="board-section player-section">
+      <h2>Your Fleet</h2>
+      <div class="board-layout">
+        <div class="board-area">
+          <span class="corner"></span>
+          <div class="col-labels">
+            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          </div>
+          <div class="row-labels">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+          </div>
+          <div id="player-board" class="board" aria-label="Your board"></div>
+        </div>
+        <div class="tracker player-tracker">
+          <div class="tracker-head">
+            <span class="tracker-title">YOUR FLEET</span>
+          </div>
+          <ul id="player-fleet" class="fleet fleet-col" aria-label="Your fleet status"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <div id="otter" class="otter">
+        <img id="otter-img" src="assets/otter-win.png" alt="Admiral Devin the otter" />
+      </div>
+      <h2 id="overlay-title">Game Over</h2>
+      <p id="overlay-message"></p>
+      <button id="play-again" type="button">Play Again</button>
+    </div>
+  </div>
+
+  <footer>
+    <button id="start-battle" type="button" disabled>Start Battle</button>
+    <button id="restart" type="button">Restart Game</button>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
