@@ -664,6 +664,7 @@ class Game {
       this.audio.resume();
       this.setPrinceMode(this.princeBtn.getAttribute("aria-pressed") !== "true");
       window.scrollTo({ top: 0, behavior: "smooth" });
+      this.playRainTransition();
     });
 
     const sfx = document.getElementById("toggle-sfx");
@@ -713,6 +714,36 @@ class Game {
       this.audio.stopMusic();
       this.audio.startMusic();
     }
+  }
+
+  /** Purple raindrops streak down the screen like a window, then run off. */
+  playRainTransition() {
+    const existing = document.querySelector(".rain-overlay");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.className = "rain-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+
+    const count = 80;
+    let maxEnd = 0;
+    for (let i = 0; i < count; i++) {
+      const drop = document.createElement("span");
+      drop.className = "raindrop";
+      const delay = Math.random() * 0.9;
+      const dur = 1.1 + Math.random() * 1.4;
+      drop.style.setProperty("--x", (Math.random() * 100).toFixed(2) + "vw");
+      drop.style.setProperty("--w", (5 + Math.random() * 13).toFixed(1) + "px");
+      drop.style.setProperty("--h", (55 + Math.random() * 170).toFixed(0) + "px");
+      drop.style.setProperty("--o", (0.45 + Math.random() * 0.4).toFixed(2));
+      drop.style.setProperty("--delay", delay.toFixed(2) + "s");
+      drop.style.setProperty("--dur", dur.toFixed(2) + "s");
+      overlay.appendChild(drop);
+      maxEnd = Math.max(maxEnd, delay + dur);
+    }
+
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.remove(), (maxEnd + 0.25) * 1000);
   }
 
   setDifficulty(value) {
@@ -807,6 +838,9 @@ class Game {
     this.setStatus(
       "Orientation: " + (this.placement.horizontal ? "horizontal" : "vertical")
     );
+    if (this.placement.dragging && this.placement.dragType) {
+      this.applyGhostShape(this.placement.dragType);
+    }
     this.renderPreview();
   }
 
@@ -872,6 +906,7 @@ class Game {
     this.clearPreview();
     this.renderShipyard();
     this.playerBoard.render();
+    this.renderFleets();
     if (this.placement.remaining.length === 0) {
       this.setStatus("Fleet positioned. Press Start Battle when ready.");
     }
@@ -897,19 +932,25 @@ class Game {
     this.placement.dragType = type;
     this.highlightSelected();
 
+    const ghost = document.createElement("div");
+    ghost.className = "drag-ghost";
+    document.body.appendChild(ghost);
+    this.dragGhost = ghost;
+    this.applyGhostShape(type);
+    this.positionGhost(event.clientX, event.clientY);
+  }
+
+  /** Size and draw the drag ghost for the current orientation. */
+  applyGhostShape(type) {
+    if (!this.dragGhost) return;
     const cellRect = this.playerBoard.cellEls[0][0].getBoundingClientRect();
     const cell = cellRect.width || 28;
     const h = this.placement.horizontal;
     const w = h ? cell * type.size : cell;
     const ht = h ? cell : cell * type.size;
-    const ghost = document.createElement("div");
-    ghost.className = "drag-ghost";
-    ghost.style.width = w + "px";
-    ghost.style.height = ht + "px";
-    ghost.innerHTML = boardShipSVG(type, w, ht, h);
-    document.body.appendChild(ghost);
-    this.dragGhost = ghost;
-    this.positionGhost(event.clientX, event.clientY);
+    this.dragGhost.style.width = w + "px";
+    this.dragGhost.style.height = ht + "px";
+    this.dragGhost.innerHTML = boardShipSVG(type, w, ht, h);
   }
 
   positionGhost(x, y) {
@@ -951,6 +992,7 @@ class Game {
     this.clearPreview();
     this.renderShipyard();
     this.playerBoard.render();
+    this.renderFleets();
     this.setStatus("Fleet positioned at random. Press Start Battle when ready.");
   }
 
@@ -961,6 +1003,7 @@ class Game {
     this.clearPreview();
     this.renderShipyard();
     this.playerBoard.render();
+    this.renderFleets();
     this.setStatus("Board cleared — position your fleet.");
   }
 
@@ -1106,7 +1149,21 @@ class Game {
 
   renderFleet(listEl, board) {
     listEl.innerHTML = "";
-    const ships = board.ships.length
+    // During placement the player's tracker doubles as a drag source: show all
+    // ship types and let the unplaced ones be dragged straight onto the board.
+    const placeSource =
+      this.phase === Phase.PLACE && board === this.playerBoard;
+    const remainingNames = placeSource
+      ? new Set(this.placement.remaining.map((t) => t.name))
+      : null;
+    const ships = placeSource
+      ? SHIP_TYPES.map((t) => ({
+          ...t,
+          hits: 0,
+          isSunk: false,
+          placed: !remainingNames.has(t.name),
+        }))
+      : board.ships.length
       ? board.ships
       : SHIP_TYPES.map((t) => ({ ...t, hits: 0, isSunk: false }));
     for (const ship of ships) {
@@ -1122,6 +1179,16 @@ class Game {
         sunk.className = "sunk-label";
         sunk.textContent = "SUNK";
         fig.appendChild(sunk);
+      }
+
+      if (placeSource) {
+        if (ship.placed) {
+          li.classList.add("fleet-placed");
+        } else {
+          li.classList.add("fleet-draggable");
+          const type = this.placement.remaining.find((t) => t.name === ship.name);
+          li.addEventListener("mousedown", (e) => this.beginShipDrag(type, e));
+        }
       }
 
       li.appendChild(fig);
