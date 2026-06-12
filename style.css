@@ -447,6 +447,23 @@ h2 {
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4);
 }
 
+/* Floating ship that follows the cursor while dragging from the shipyard. */
+.drag-ghost {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1000;
+  color: #9aa6b0;
+  opacity: 0.92;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+}
+
+.drag-ghost .ship-figure {
+  display: block;
+}
+
 /* ---------------- Ship graphics (overlay) ---------------- */
 .ship-layer {
   position: absolute;
@@ -555,6 +572,11 @@ h2 {
   color: var(--text);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
   text-shadow: none;
+  cursor: grab;
+}
+
+.shipyard-item:active {
+  cursor: grabbing;
 }
 
 .shipyard-item.selected {
@@ -856,6 +878,8 @@ header {
 
 /* Prince Mode toggle, in the left rail under "2 Players" (battle only). */
 .prince-btn {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   margin-top: 0.9rem;
   font-family: var(--display);
@@ -871,6 +895,58 @@ header {
   box-shadow: 0 3px 0 #2a0f4a, 0 4px 8px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   display: none;
+}
+
+.prince-btn > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Diagonal light sweep that glides across the button. */
+.prince-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -160%;
+  width: 55%;
+  height: 100%;
+  z-index: 1;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  transform: skewX(-22deg);
+  pointer-events: none;
+  animation: prince-shimmer 2.8s ease-in-out infinite;
+}
+
+/* Twinkling sparkle specks layered over the button. */
+.prince-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, #fff 0, #fff 1px, transparent 2px),
+    radial-gradient(circle, #ffe9ff 0, #ffe9ff 1px, transparent 2px),
+    radial-gradient(circle, #fff 0, #fff 1px, transparent 2px),
+    radial-gradient(circle, #f4d9ff 0, #f4d9ff 1px, transparent 2px);
+  background-repeat: no-repeat;
+  background-position: 14% 32%, 80% 64%, 46% 78%, 88% 20%;
+  animation: prince-twinkle 1.6s ease-in-out infinite;
+}
+
+@keyframes prince-shimmer {
+  0% { left: -160%; }
+  55%, 100% { left: 160%; }
+}
+
+@keyframes prince-twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
 }
 
 body.phase-battle .prince-btn {
