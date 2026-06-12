@@ -48,6 +48,26 @@ function shipSilhouetteSVG(ship) {
   );
 }
 
+/* Warship silhouette sized to fill a board/placement box (stretched to span
+ * the ship's cells). Vertical ships draw the horizontal hull and rotate it. */
+function boardShipSVG(ship, width, height, horizontal) {
+  const isSub = /submarine/i.test(ship.name);
+  const path = isSub ? SHIP_SILHOUETTES.sub : SHIP_SILHOUETTES.surface;
+  const w = horizontal ? width : height;
+  const h = horizontal ? height : width;
+  const style = horizontal
+    ? ""
+    : ' style="position:absolute;left:50%;top:50%;' +
+      'transform:translate(-50%,-50%) rotate(90deg);"';
+  // Tight viewBox around the silhouette's bounds so the (stretched) hull
+  // fills the ship's cells instead of leaving thin slivers.
+  return (
+    `<svg class="ship-figure" viewBox="2 3 120 31" preserveAspectRatio="none" ` +
+    `width="${w}" height="${h}"${style} aria-hidden="true">` +
+    `<path d="${path}" fill="currentColor" /></svg>`
+  );
+}
+
 /* ------------------------------------------------------------------ *
  * Audio: background music and sound effects play from bundled audio
  * files; the win/lose fanfare is a short synthesized flourish.
@@ -343,10 +363,13 @@ class Board {
     el.className = "ship-graphic" + (ship.horizontal ? " horizontal" : " vertical");
     if (ship.isSunk) el.classList.add("sunk");
     el.dataset.size = String(ship.size);
+    const width = lastEl.offsetLeft + lastEl.offsetWidth - firstEl.offsetLeft;
+    const height = lastEl.offsetTop + lastEl.offsetHeight - firstEl.offsetTop;
     el.style.left = firstEl.offsetLeft + "px";
     el.style.top = firstEl.offsetTop + "px";
-    el.style.width = lastEl.offsetLeft + lastEl.offsetWidth - firstEl.offsetLeft + "px";
-    el.style.height = lastEl.offsetTop + lastEl.offsetHeight - firstEl.offsetTop + "px";
+    el.style.width = width + "px";
+    el.style.height = height + "px";
+    el.innerHTML = boardShipSVG(ship, width, height, ship.horizontal);
     return el;
   }
 }
@@ -501,8 +524,10 @@ class Game {
       const preview = document.createElement("span");
       preview.className = "ship-graphic horizontal";
       preview.dataset.size = String(type.size);
-      preview.style.width = type.size * 26 + "px";
+      const previewWidth = type.size * 26;
+      preview.style.width = previewWidth + "px";
       preview.style.height = "22px";
+      preview.innerHTML = boardShipSVG(type, previewWidth, 22, true);
       const label = document.createElement("span");
       label.className = "shipyard-label";
       label.textContent = `${type.name} (${type.size})`;

@@ -395,49 +395,21 @@ h2 {
   z-index: 1;
 }
 
+/* Board + shipyard ships are drawn as gray warship silhouettes using the
+   same outline as the fleet tracker (currentColor sets the fill). */
 .ship-graphic {
   position: absolute;
-  border-radius: 9px;
-  background: linear-gradient(180deg, #98a2ab 0%, #6b757e 45%, #4a535b 100%);
-  border: 1px solid #2a3036;
-  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.55), 0 2px 5px rgba(0, 0, 0, 0.55);
-  overflow: hidden;
+  color: #9aa6b0;
+  overflow: visible;
 }
 
-/* deck stripe */
-.ship-graphic::before {
-  content: "";
-  position: absolute;
-  background: rgba(0, 0, 0, 0.28);
-  border-radius: 4px;
-}
-
-.ship-graphic.horizontal::before {
-  inset: 38% 12%;
-}
-
-.ship-graphic.vertical::before {
-  inset: 12% 38%;
-}
-
-/* bridge / turret bump */
-.ship-graphic::after {
-  content: "";
-  position: absolute;
-  width: 34%;
-  height: 34%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 3px;
-  background: linear-gradient(180deg, #b6bfc6, #707a82);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+.ship-graphic .ship-figure {
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.55));
 }
 
 .ship-graphic.sunk {
-  background: linear-gradient(180deg, #9a4a44, #6e2a26 55%, #4a1714 100%);
-  filter: grayscale(0.2) brightness(0.85);
+  color: #c0392b;
 }
 
 /* ---------------- Stats ---------------- */
