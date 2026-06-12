@@ -553,6 +553,11 @@ h2 {
 
 /* ---------------- Fleet trackers (battleshiponline-style) ---------------- */
 .tracker {
+  /* equal fixed width so the enemy/player [board + tracker] blocks match,
+     keeping both boards left-aligned across the two sections */
+  flex: 0 0 250px;
+  width: 250px;
+  max-width: 100%;
   background-color: #06160d;
   background-image:
     linear-gradient(rgba(47, 210, 79, 0.14) 1px, transparent 1px),
@@ -566,14 +571,12 @@ h2 {
 
 .enemy-tracker {
   align-self: stretch;
-  min-width: 210px;
   border-color: #ff4632;
   box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.75), 0 0 14px rgba(255, 70, 50, 0.25);
 }
 
 .player-tracker {
   align-self: stretch;
-  min-width: 210px;
 }
 
 .tracker-head {
