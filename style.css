@@ -88,15 +88,15 @@ header {
   padding: 21px 18px 24px;
 }
 
-/* Translucent radar sweep overlaid on the welcome/placement screen. */
+/* Radar sweep contained within and centered on the placement panel. */
 .radar-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 40;
+  z-index: 0;
   pointer-events: none;
   overflow: hidden;
   display: none;
-  opacity: 0.6;
+  opacity: 0.92;
 }
 
 body.phase-place .radar-overlay {
@@ -109,38 +109,38 @@ body.phase-place .radar-overlay {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 150vmax;
-  height: 150vmax;
-  margin-left: -75vmax;
-  margin-top: -75vmax;
+  width: 760px;
+  height: 760px;
+  margin-left: -380px;
+  margin-top: -380px;
   border-radius: 50%;
 }
 
 .radar-rings {
   background: repeating-radial-gradient(
     circle at center,
-    transparent 0 5.9vmax,
-    rgba(80, 255, 160, 0.16) 5.9vmax 6vmax
+    transparent 0 31px,
+    rgba(80, 255, 160, 0.32) 31px 33px
   );
-  border: 2px solid rgba(80, 255, 160, 0.22);
-  box-shadow: inset 0 0 60px rgba(80, 255, 160, 0.1);
+  border: 2px solid rgba(80, 255, 160, 0.45);
+  box-shadow: inset 0 0 70px rgba(80, 255, 160, 0.22);
 }
 
 /* Crosshair lines through the center, clipped to the circle. */
 .radar-grid {
   background:
-    linear-gradient(rgba(80, 255, 160, 0.16), rgba(80, 255, 160, 0.16)) center / 100% 1.5px no-repeat,
-    linear-gradient(rgba(80, 255, 160, 0.16), rgba(80, 255, 160, 0.16)) center / 1.5px 100% no-repeat;
+    linear-gradient(rgba(80, 255, 160, 0.32), rgba(80, 255, 160, 0.32)) center / 100% 2px no-repeat,
+    linear-gradient(rgba(80, 255, 160, 0.32), rgba(80, 255, 160, 0.32)) center / 2px 100% no-repeat;
 }
 
 /* Rotating beam: bright leading edge fading into a trailing wedge. */
 .radar-sweep {
   background: conic-gradient(
     from 0deg,
-    rgba(90, 255, 170, 0.55) 0deg,
-    rgba(90, 255, 170, 0.14) 20deg,
-    rgba(90, 255, 170, 0) 65deg,
-    rgba(90, 255, 170, 0) 360deg
+    rgba(110, 255, 180, 0.8) 0deg,
+    rgba(110, 255, 180, 0.22) 20deg,
+    rgba(110, 255, 180, 0) 65deg,
+    rgba(110, 255, 180, 0) 360deg
   );
   mix-blend-mode: screen;
   animation: radar-sweep-spin 4.2s linear infinite;
@@ -243,56 +243,17 @@ body.phase-place .radar-overlay {
   line-height: 1.02;
 }
 
-.logo-banner {
-  position: relative;
-  display: inline-block;
-  padding: 0 2.6rem;
-  z-index: 0;
-}
-
-/* thin red ribbon that runs behind the middle of the letters */
-.logo-banner::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 44%;
-  transform: translateY(-50%) skewX(-8deg);
-  background: linear-gradient(#e23b2b, #b21f12);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  /* notched ribbon ends */
-  clip-path: polygon(3% 0, 100% 0, 97% 100%, 0 100%);
-  z-index: -1;
-}
-
 .logo-title {
-  position: relative;
-  z-index: 1;
   margin: 0;
-  font-family: var(--display);
-  font-style: italic;
-  font-weight: 900;
-  font-size: clamp(4.6rem, 16vw, 8rem);
-  line-height: 1;
-  letter-spacing: 0.01em;
-  /* The yellow->orange gradient is clipped to the glyphs themselves, so the
-     fill follows every curve (including the P's bowl). The dark-red outline
-     and bevel are built from stacked drop-shadows instead of
-     -webkit-text-stroke, which on WebKit closes tight inner curves with a
-     flat chord (the old gap in the P). Drop-shadows follow the glyph alpha,
-     so the outline curves with the letter. */
-  background: linear-gradient(#fff3b0 12%, #ffd23f 38%, #ff8c1a 70%, #e85d04 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  filter:
-    drop-shadow(1.5px 0 0 #7c1208) drop-shadow(-1.5px 0 0 #7c1208)
-    drop-shadow(0 1.5px 0 #7c1208) drop-shadow(0 -1.5px 0 #7c1208)
-    drop-shadow(1px 1px 0 #7c1208) drop-shadow(-1px 1px 0 #7c1208)
-    drop-shadow(1px -1px 0 #7c1208) drop-shadow(-1px -1px 0 #7c1208)
-    drop-shadow(2px 3px 0 #7c1208) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+  font-size: 0;
+  line-height: 0;
+}
+
+.logo-img {
+  display: block;
+  width: min(680px, 90vw);
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
 }
 
 .logo-tagline {
@@ -531,6 +492,8 @@ h2 {
 
 /* ---------------- Placement / shipyard ---------------- */
 .placement {
+  position: relative;
+  overflow: hidden;
   background-color: #2b3137;
   background-image: linear-gradient(160deg, #3c444b, #232a30 60%, #1a2025);
   border-radius: 12px;
@@ -539,6 +502,12 @@ h2 {
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   max-width: 560px;
+}
+
+/* Keep the panel's controls above the radar backdrop. */
+.placement > *:not(.radar-overlay) {
+  position: relative;
+  z-index: 1;
 }
 
 .placement .hint {

@@ -109,6 +109,7 @@ class AudioController {
     this.sfxSrc = {
       splash: "assets/splash.wav",
       explosion: "assets/explosion.wav",
+      sunk: "assets/sunk.wav",
     };
   }
 
@@ -141,6 +142,11 @@ class AudioController {
     this.playSfx("explosion", 0.85);
   }
 
+  /** Bigger blast when a ship is fully sunk. */
+  sunk() {
+    this.playSfx("sunk", 1.0);
+  }
+
   fanfare(win) {
     if (!this.sfxOn) return;
     this.ensure();
@@ -163,10 +169,12 @@ class AudioController {
     }
   }
 
+  /** Returns a promise resolving true once the track is actually playing. */
   startMusic() {
-    if (!this.musicOn) return;
+    if (!this.musicOn) return Promise.resolve(false);
     const p = this.music.play();
-    if (p && typeof p.catch === "function") p.catch(() => {});
+    if (p && typeof p.then === "function") return p.then(() => true).catch(() => false);
+    return Promise.resolve(true);
   }
 
   stopMusic() {
@@ -175,9 +183,10 @@ class AudioController {
 
   /** Looping sonar ambience for the welcome/placement screen. */
   startSonar() {
-    if (!this.musicOn) return;
+    if (!this.musicOn) return Promise.resolve(false);
     const p = this.sonar.play();
-    if (p && typeof p.catch === "function") p.catch(() => {});
+    if (p && typeof p.then === "function") return p.then(() => true).catch(() => false);
+    return Promise.resolve(true);
   }
 
   stopSonar() {
@@ -592,12 +601,15 @@ class Game {
     });
 
     // Browsers block autoplay until the first user gesture; kick off the
-    // welcome-screen sonar loop on the first interaction.
+    // phase audio on each interaction until it actually starts (a blocked
+    // first attempt must not consume the listener).
     const kickAudio = () => {
       this.audio.resume();
-      this.resumePhaseAudio();
-      document.removeEventListener("pointerdown", kickAudio);
-      document.removeEventListener("keydown", kickAudio);
+      this.resumePhaseAudio().then((started) => {
+        if (!started) return;
+        document.removeEventListener("pointerdown", kickAudio);
+        document.removeEventListener("keydown", kickAudio);
+      });
     };
     document.addEventListener("pointerdown", kickAudio);
     document.addEventListener("keydown", kickAudio);
@@ -623,14 +635,16 @@ class Game {
 
   /** Play the background track that matches the current phase. */
   resumePhaseAudio() {
-    if (!this.audio.musicOn) return;
+    if (!this.audio.musicOn) return Promise.resolve(false);
     if (this.phase === Phase.PLACE) {
       this.audio.stopMusic();
-      this.audio.startSonar();
-    } else if (this.phase === Phase.BATTLE) {
-      this.audio.stopSonar();
-      this.audio.startMusic();
+      return this.audio.startSonar();
     }
+    if (this.phase === Phase.BATTLE) {
+      this.audio.stopSonar();
+      return this.audio.startMusic();
+    }
+    return Promise.resolve(false);
   }
 
   setDifficulty(value) {
@@ -815,7 +829,7 @@ class Game {
     this.updateStats();
 
     const cell = this.enemyBoard.cellEls[pos.row][pos.col];
-    this.playEffect(cell, shot.result);
+    this.playEffect(cell, shot);
     this.enemyBoard.render();
     this.renderFleets();
 
@@ -847,7 +861,7 @@ class Game {
     const shot = this.playerBoard.receiveShot(target.row, target.col);
     this.ai.registerResult(target, shot);
     const cell = this.playerBoard.cellEls[target.row][target.col];
-    this.playEffect(cell, shot.result);
+    this.playEffect(cell, shot);
     this.playerBoard.render();
     this.renderFleets();
 
@@ -868,13 +882,19 @@ class Game {
     this.busy = false;
   }
 
-  playEffect(cell, result) {
+  playEffect(cell, shot) {
+    const result = typeof shot === "string" ? shot : shot.result;
+    const sunk = typeof shot === "object" && shot.ship && shot.ship.isSunk;
     const fx = document.createElement("span");
     fx.className = result === "hit" ? "fx-explosion" : "fx-splash";
     cell.appendChild(fx);
     setTimeout(() => fx.remove(), 800);
-    if (result === "hit") this.audio.explosion();
-    else this.audio.splash();
+    if (result === "hit") {
+      if (sunk) this.audio.sunk();
+      else this.audio.explosion();
+    } else {
+      this.audio.splash();
+    }
   }
 
   updateStats() {
