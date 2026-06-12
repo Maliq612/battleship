@@ -113,6 +113,11 @@ class AudioController {
     this.prince.volume = 0.5;
     this.prince.preload = "auto";
 
+    // Prince Mode win-screen track (replaces the Champions snippet).
+    this.princeWin = new Audio("assets/lover.mp3");
+    this.princeWin.volume = 0.7;
+    this.princeWin.preload = "auto";
+
     this.sfxSrc = {
       splash: "assets/splash.wav",
       explosion: "assets/explosion.wav",
@@ -213,6 +218,12 @@ class AudioController {
   playWin() {
     this.stopMusic();
     if (!this.musicOn) return;
+    if (this.princeMode) {
+      this.princeWin.currentTime = 0;
+      const pw = this.princeWin.play();
+      if (pw && typeof pw.catch === "function") pw.catch(() => {});
+      return;
+    }
     this.winMusic.currentTime = this.winClip.start;
     const p = this.winMusic.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
@@ -230,6 +241,8 @@ class AudioController {
   stopEndMusic() {
     this.winMusic.pause();
     this.winMusic.currentTime = 0;
+    this.princeWin.pause();
+    this.princeWin.currentTime = 0;
     this.loseMusic.pause();
     this.loseMusic.currentTime = 0;
   }
