@@ -88,6 +88,76 @@ header {
   padding: 21px 18px 24px;
 }
 
+/* Translucent radar sweep overlaid on the welcome/placement screen. */
+.radar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+  display: none;
+  opacity: 0.6;
+}
+
+body.phase-place .radar-overlay {
+  display: block;
+}
+
+.radar-rings,
+.radar-grid,
+.radar-sweep {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  margin-left: -75vmax;
+  margin-top: -75vmax;
+  border-radius: 50%;
+}
+
+.radar-rings {
+  background: repeating-radial-gradient(
+    circle at center,
+    transparent 0 5.9vmax,
+    rgba(80, 255, 160, 0.16) 5.9vmax 6vmax
+  );
+  border: 2px solid rgba(80, 255, 160, 0.22);
+  box-shadow: inset 0 0 60px rgba(80, 255, 160, 0.1);
+}
+
+/* Crosshair lines through the center, clipped to the circle. */
+.radar-grid {
+  background:
+    linear-gradient(rgba(80, 255, 160, 0.16), rgba(80, 255, 160, 0.16)) center / 100% 1.5px no-repeat,
+    linear-gradient(rgba(80, 255, 160, 0.16), rgba(80, 255, 160, 0.16)) center / 1.5px 100% no-repeat;
+}
+
+/* Rotating beam: bright leading edge fading into a trailing wedge. */
+.radar-sweep {
+  background: conic-gradient(
+    from 0deg,
+    rgba(90, 255, 170, 0.55) 0deg,
+    rgba(90, 255, 170, 0.14) 20deg,
+    rgba(90, 255, 170, 0) 65deg,
+    rgba(90, 255, 170, 0) 360deg
+  );
+  mix-blend-mode: screen;
+  animation: radar-sweep-spin 4.2s linear infinite;
+}
+
+@keyframes radar-sweep-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep {
+    animation: none;
+  }
+}
+
 /* Box-style copy down the left rail */
 .rail-copy {
   margin-top: 27px;
@@ -205,7 +275,7 @@ header {
   font-weight: 900;
   font-size: clamp(4.6rem, 16vw, 8rem);
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.01em;
   /* The yellow->orange gradient is clipped to the glyphs themselves, so the
      fill follows every curve (including the P's bowl). The dark-red outline
      and bevel are built from stacked drop-shadows instead of

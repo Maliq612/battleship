@@ -100,6 +100,12 @@ class AudioController {
     this.loseMusic.volume = 0.8;
     this.loseMusic.preload = "auto";
 
+    // Looping sonar ambience for the welcome/placement screen.
+    this.sonar = new Audio("assets/sonar.mp3");
+    this.sonar.loop = true;
+    this.sonar.volume = 0.55;
+    this.sonar.preload = "auto";
+
     this.sfxSrc = {
       splash: "assets/splash.wav",
       explosion: "assets/explosion.wav",
@@ -167,6 +173,17 @@ class AudioController {
     this.music.pause();
   }
 
+  /** Looping sonar ambience for the welcome/placement screen. */
+  startSonar() {
+    if (!this.musicOn) return;
+    const p = this.sonar.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  }
+
+  stopSonar() {
+    this.sonar.pause();
+  }
+
   /** Celebratory track for the win screen (replaces background music). */
   playWin() {
     this.stopMusic();
@@ -194,9 +211,9 @@ class AudioController {
 
   setMusic(on) {
     this.musicOn = on;
-    if (on) this.startMusic();
-    else {
+    if (!on) {
       this.stopMusic();
+      this.stopSonar();
       this.stopEndMusic();
     }
   }
@@ -571,7 +588,19 @@ class Game {
       music.innerHTML = on ? "&#9835; Music: On" : "&#9835; Music: Off";
       this.audio.resume();
       this.audio.setMusic(on);
+      if (on) this.resumePhaseAudio();
     });
+
+    // Browsers block autoplay until the first user gesture; kick off the
+    // welcome-screen sonar loop on the first interaction.
+    const kickAudio = () => {
+      this.audio.resume();
+      this.resumePhaseAudio();
+      document.removeEventListener("pointerdown", kickAudio);
+      document.removeEventListener("keydown", kickAudio);
+    };
+    document.addEventListener("pointerdown", kickAudio);
+    document.addEventListener("keydown", kickAudio);
     const sfx = document.getElementById("toggle-sfx");
     sfx.addEventListener("click", () => {
       const on = sfx.getAttribute("aria-pressed") !== "true";
@@ -590,6 +619,18 @@ class Game {
     this.phase = phase;
     document.body.classList.remove("phase-place", "phase-battle", "phase-over");
     document.body.classList.add("phase-" + phase);
+  }
+
+  /** Play the background track that matches the current phase. */
+  resumePhaseAudio() {
+    if (!this.audio.musicOn) return;
+    if (this.phase === Phase.PLACE) {
+      this.audio.stopMusic();
+      this.audio.startSonar();
+    } else if (this.phase === Phase.BATTLE) {
+      this.audio.stopSonar();
+      this.audio.startMusic();
+    }
   }
 
   setDifficulty(value) {
@@ -628,6 +669,7 @@ class Game {
     this.setStatus("Position your fleet — click a ship, then click your grid.");
     this.renderShipyard();
     this.renderAll();
+    this.resumePhaseAudio();
   }
 
   /* ---------------- Placement phase ---------------- */
@@ -752,6 +794,7 @@ class Game {
   startBattle() {
     if (this.placement.remaining.length > 0) return;
     this.audio.resume();
+    this.audio.stopSonar();
     this.audio.startMusic();
     this.setPhase(Phase.BATTLE);
     this.setStatus("Your turn — click a cell on the enemy waters to fire.");
@@ -849,6 +892,7 @@ class Game {
     this.renderFleets();
 
     this.audio.stopMusic();
+    this.audio.stopSonar();
     if (playerWon) {
       this.audio.playWin();
     } else {
@@ -932,5 +976,5 @@ function randomInt(maxExclusive) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  new Game();
+  window.game = new Game();
 });
