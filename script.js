@@ -592,7 +592,16 @@ class Game {
     this.difficultyBtns = Array.from(document.querySelectorAll(".difficulty-btn"));
 
     // Placement state
-    this.placement = { horizontal: true, selected: null, remaining: [], hover: null };
+    this.placement = {
+      horizontal: true,
+      selected: null,
+      remaining: [],
+      hover: null,
+      dragging: false,
+      dragMoved: false,
+      dragType: null,
+    };
+    this.dragGhost = null;
 
     this.bindEvents();
     this.start();
@@ -607,6 +616,8 @@ class Game {
       this.placement.hover = null;
       this.clearPreview();
     });
+    document.addEventListener("mousemove", (e) => this.onDragMove(e));
+    document.addEventListener("mouseup", (e) => this.onDragEnd(e));
 
     document.getElementById("restart").addEventListener("click", () => this.start());
     document.getElementById("play-again").addEventListener("click", () => this.start());
@@ -652,6 +663,7 @@ class Game {
     this.princeBtn.addEventListener("click", () => {
       this.audio.resume();
       this.setPrinceMode(this.princeBtn.getAttribute("aria-pressed") !== "true");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
     const sfx = document.getElementById("toggle-sfx");
@@ -750,6 +762,7 @@ class Game {
       const item = document.createElement("button");
       item.type = "button";
       item.className = "shipyard-item";
+      item.dataset.ship = type.name;
       if (this.placement.selected && this.placement.selected.name === type.name) {
         item.classList.add("selected");
       }
@@ -766,9 +779,11 @@ class Game {
       item.appendChild(preview);
       item.appendChild(label);
       item.addEventListener("click", () => {
+        if (this.placement.dragMoved) return;
         this.placement.selected = type;
         this.renderShipyard();
       });
+      item.addEventListener("mousedown", (e) => this.beginShipDrag(type, e));
       this.shipyardEl.appendChild(item);
     }
     const allPlaced = this.placement.remaining.length === 0;
@@ -776,6 +791,14 @@ class Game {
     if (allPlaced) {
       this.shipyardEl.innerHTML =
         '<p class="shipyard-done">Fleet ready, Admiral. Press <em>Start Battle</em>.</p>';
+    }
+  }
+
+  /** Refresh the selected-ship highlight without rebuilding the shipyard DOM. */
+  highlightSelected() {
+    const selected = this.placement.selected ? this.placement.selected.name : null;
+    for (const el of this.shipyardEl.querySelectorAll(".shipyard-item")) {
+      el.classList.toggle("selected", el.dataset.ship === selected);
     }
   }
 
@@ -828,11 +851,17 @@ class Game {
     if (this.phase !== Phase.PLACE || !this.placement.selected) return;
     const pos = this.cellFromEvent(event);
     if (!pos) return;
+    this.placeSelectedAt(pos);
+  }
+
+  /** Place the currently-selected ship anchored at pos. Shared by click + drag-drop. */
+  placeSelectedAt(pos) {
     const type = this.placement.selected;
+    if (!type) return false;
     const h = this.placement.horizontal;
     if (!this.playerBoard.canPlace(pos.row, pos.col, type.size, h)) {
       this.setStatus("Can't place there — ships can't overlap or hang off the grid.");
-      return;
+      return false;
     }
     this.audio.resume();
     this.playerBoard.placeShip(pos.row, pos.col, type, h);
@@ -845,6 +874,72 @@ class Game {
     this.playerBoard.render();
     if (this.placement.remaining.length === 0) {
       this.setStatus("Fleet positioned. Press Start Battle when ready.");
+    }
+    return true;
+  }
+
+  /** Resolve the board cell under a viewport point, or null. */
+  cellFromPoint(x, y) {
+    const el = document.elementFromPoint(x, y);
+    if (!el) return null;
+    const cell = el.closest(".cell");
+    if (!cell || !this.playerBoard.element.contains(cell)) return null;
+    return { row: Number(cell.dataset.row), col: Number(cell.dataset.col) };
+  }
+
+  /** Start dragging a ship from the shipyard (pointer-based, with a ghost). */
+  beginShipDrag(type, event) {
+    if (this.phase !== Phase.PLACE) return;
+    event.preventDefault();
+    this.placement.selected = type;
+    this.placement.dragging = true;
+    this.placement.dragMoved = false;
+    this.placement.dragType = type;
+    this.highlightSelected();
+
+    const cellRect = this.playerBoard.cellEls[0][0].getBoundingClientRect();
+    const cell = cellRect.width || 28;
+    const h = this.placement.horizontal;
+    const w = h ? cell * type.size : cell;
+    const ht = h ? cell : cell * type.size;
+    const ghost = document.createElement("div");
+    ghost.className = "drag-ghost";
+    ghost.style.width = w + "px";
+    ghost.style.height = ht + "px";
+    ghost.innerHTML = boardShipSVG(type, w, ht, h);
+    document.body.appendChild(ghost);
+    this.dragGhost = ghost;
+    this.positionGhost(event.clientX, event.clientY);
+  }
+
+  positionGhost(x, y) {
+    if (!this.dragGhost) return;
+    this.dragGhost.style.left = x + "px";
+    this.dragGhost.style.top = y + "px";
+  }
+
+  onDragMove(event) {
+    if (!this.placement.dragging) return;
+    this.placement.dragMoved = true;
+    this.positionGhost(event.clientX, event.clientY);
+    this.placement.hover = this.cellFromPoint(event.clientX, event.clientY);
+    this.renderPreview();
+  }
+
+  onDragEnd(event) {
+    if (!this.placement.dragging) return;
+    const pos = this.cellFromPoint(event.clientX, event.clientY);
+    this.endShipDrag();
+    if (pos) this.placeSelectedAt(pos);
+    else this.clearPreview();
+  }
+
+  endShipDrag() {
+    this.placement.dragging = false;
+    this.placement.hover = null;
+    if (this.dragGhost) {
+      this.dragGhost.remove();
+      this.dragGhost = null;
     }
   }
 
