@@ -553,60 +553,127 @@ h2 {
   font-size: 0.85rem;
 }
 
-/* ---------------- Fleet roster (silhouettes) ---------------- */
+/* ---------------- Fleet trackers (battleshiponline-style) ---------------- */
+.tracker {
+  background-color: #06160d;
+  background-image:
+    linear-gradient(rgba(47, 210, 79, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 210, 79, 0.14) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border: 2px solid #2fd24f;
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem 0.85rem;
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.75), 0 0 14px rgba(47, 210, 79, 0.25);
+}
+
+.enemy-tracker {
+  width: 100%;
+  max-width: 760px;
+  margin: 0.9rem auto 0;
+  border-color: #ff4632;
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.75), 0 0 14px rgba(255, 70, 50, 0.25);
+}
+
+.player-tracker {
+  align-self: stretch;
+  min-width: 210px;
+}
+
+.tracker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+
+.tracker-title {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  color: #36e85a;
+  text-shadow: 0 0 8px rgba(54, 232, 90, 0.7);
+}
+
+.enemy-tracker .tracker-title {
+  color: #ff5a48;
+  text-shadow: 0 0 8px rgba(255, 90, 72, 0.7);
+}
+
+.tracker-score {
+  font-family: var(--display);
+  font-size: 1rem;
+  color: #36e85a;
+  text-shadow: 0 0 8px rgba(54, 232, 90, 0.7);
+}
+
 .fleet {
   list-style: none;
-  padding: 0.6rem 0.8rem;
   margin: 0;
-  min-width: 200px;
-  align-self: stretch;
-  background: linear-gradient(var(--steel), var(--steel-dark));
-  border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 0;
+  display: flex;
+}
+
+.fleet-col {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.fleet-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.6rem 1.1rem;
 }
 
 .fleet li {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.38rem 0.2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  align-items: flex-end;
+  justify-content: center;
 }
 
-.fleet li:last-child {
-  border-bottom: none;
-}
-
-.ship-silhouette {
+/* Silhouette colors: green = alive, red = sunk; enemy ships always red. */
+.ship-fig-wrap {
+  position: relative;
   display: inline-flex;
-  gap: 2px;
+  align-items: flex-end;
 }
 
-.ship-silhouette .seg {
-  width: 11px;
-  height: 11px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #8a949d, #59636c);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+.ship-figure {
+  display: block;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
 }
 
-.ship-silhouette .seg.hit-seg {
-  background: linear-gradient(180deg, #ff7361, var(--peg-red));
+.player-tracker .ship-figure {
+  color: #2fd24f;
 }
 
-.fleet li.sunk-ship {
-  color: #ff7361;
-  opacity: 0.85;
+.player-tracker .sunk-ship .ship-figure {
+  color: #e23b2b;
 }
 
-.fleet li.sunk-ship .ship-silhouette .seg {
-  background: linear-gradient(180deg, #c0392b, var(--peg-sunk));
+.enemy-tracker .ship-figure {
+  color: #9c2f25;
 }
 
-.ship-name {
-  white-space: nowrap;
+.enemy-tracker .sunk-ship .ship-figure {
+  color: #ff4632;
+}
+
+.sunk-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-family: var(--display);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: #ffb01f;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
 }
 
 /* ---------------- Splash / explosion effects ---------------- */

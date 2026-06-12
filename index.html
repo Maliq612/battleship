@@ -67,7 +67,13 @@
           </div>
           <div id="enemy-board" class="board" aria-label="Enemy board"></div>
         </div>
-        <ul id="enemy-fleet" class="fleet" aria-label="Enemy fleet status"></ul>
+      </div>
+      <div class="tracker enemy-tracker">
+        <div class="tracker-head">
+          <span class="tracker-title">ENEMY FLEET</span>
+          <span class="tracker-score">SCORE: <strong id="enemy-score">0</strong></span>
+        </div>
+        <ul id="enemy-fleet" class="fleet fleet-row" aria-label="Enemy fleet status"></ul>
       </div>
     </section>
 
@@ -84,7 +90,12 @@
           </div>
           <div id="player-board" class="board" aria-label="Your board"></div>
         </div>
-        <ul id="player-fleet" class="fleet" aria-label="Your fleet status"></ul>
+        <div class="tracker player-tracker">
+          <div class="tracker-head">
+            <span class="tracker-title">YOUR FLEET</span>
+          </div>
+          <ul id="player-fleet" class="fleet fleet-col" aria-label="Your fleet status"></ul>
+        </div>
       </div>
     </section>
   </main>

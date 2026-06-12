@@ -22,6 +22,32 @@ const CellState = {
   MISS: "miss",
 };
 
+/* Side-profile silhouettes (fill = currentColor so CSS controls the color).
+ * Surface warships share one hull scaled by length; the submarine differs. */
+const SHIP_SILHOUETTES = {
+  surface:
+    "M4 24 L110 24 L118 28 L112 32 L10 32 Z " +
+    "M28 24 L28 16 L40 16 L43 11 L60 11 L63 16 L72 16 L72 24 Z " +
+    "M76 24 L76 18 L92 18 L92 24 Z " +
+    "M49 11 L52 4 L55 11 Z",
+  sub:
+    "M8 28 Q8 21 20 21 L100 21 Q116 21 116 28 Q116 33 100 33 L20 33 Q8 33 8 28 Z " +
+    "M52 21 L52 13 L68 13 L68 21 Z " +
+    "M58 13 L60 7 L62 13 Z",
+};
+
+function shipSilhouetteSVG(ship) {
+  const isSub = /submarine/i.test(ship.name);
+  const path = isSub ? SHIP_SILHOUETTES.sub : SHIP_SILHOUETTES.surface;
+  const width = 26 + ship.size * 16;
+  return (
+    `<svg class="ship-figure" viewBox="0 0 124 40" width="${width}" height="${Math.round(
+      width / 3.1
+    )}" preserveAspectRatio="xMidYMax meet" aria-hidden="true">` +
+    `<path d="${path}" fill="currentColor" /></svg>`
+  );
+}
+
 /* ------------------------------------------------------------------ *
  * Audio: all sounds are synthesized with the Web Audio API so the
  * project stays dependency-free and ships no copyrighted material.
@@ -427,6 +453,7 @@ class Game {
     this.statShots = document.getElementById("stat-shots");
     this.statHits = document.getElementById("stat-hits");
     this.statRate = document.getElementById("stat-rate");
+    this.enemyScore = document.getElementById("enemy-score");
 
     this.busy = false;
     this.phase = Phase.PLACE;
@@ -751,6 +778,7 @@ class Game {
   renderFleets() {
     this.renderFleet(this.enemyFleetEl, this.enemyBoard);
     this.renderFleet(this.playerFleetEl, this.playerBoard);
+    this.updateScore();
   }
 
   renderFleet(listEl, board) {
@@ -760,26 +788,29 @@ class Game {
       : SHIP_TYPES.map((t) => ({ ...t, hits: 0, isSunk: false }));
     for (const ship of ships) {
       const li = document.createElement("li");
+      li.setAttribute("aria-label", ship.isSunk ? `${ship.name} sunk` : ship.name);
       if (ship.isSunk) li.classList.add("sunk-ship");
 
-      const silhouette = document.createElement("span");
-      silhouette.className = "ship-silhouette";
-      silhouette.dataset.size = String(ship.size);
-      for (let i = 0; i < ship.size; i++) {
-        const seg = document.createElement("span");
-        seg.className = "seg";
-        if (i < ship.hits) seg.classList.add("hit-seg");
-        silhouette.appendChild(seg);
+      const fig = document.createElement("span");
+      fig.className = "ship-fig-wrap";
+      fig.innerHTML = shipSilhouetteSVG(ship);
+      if (ship.isSunk) {
+        const sunk = document.createElement("span");
+        sunk.className = "sunk-label";
+        sunk.textContent = "SUNK";
+        fig.appendChild(sunk);
       }
 
-      const name = document.createElement("span");
-      name.className = "ship-name";
-      name.textContent = ship.isSunk ? `${ship.name} — SUNK` : ship.name;
-
-      li.appendChild(silhouette);
-      li.appendChild(name);
+      li.appendChild(fig);
       listEl.appendChild(li);
     }
+  }
+
+  updateScore() {
+    if (!this.enemyScore) return;
+    const sunk = this.enemyBoard.ships.filter((s) => s.isSunk).length;
+    const score = this.hits * 10 + sunk * 50;
+    this.enemyScore.textContent = String(score);
   }
 
   setStatus(text) {
