@@ -727,6 +727,12 @@ h2 {
   filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
 }
 
+/* Never let the enlarged tracker silhouettes overflow a narrowed panel. */
+.fleet .ship-figure {
+  max-width: 100%;
+  height: auto;
+}
+
 .player-tracker .ship-figure {
   color: #2fd24f;
 }

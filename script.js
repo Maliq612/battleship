@@ -39,7 +39,7 @@ const SHIP_SILHOUETTES = {
 function shipSilhouetteSVG(ship) {
   const isSub = /submarine/i.test(ship.name);
   const path = isSub ? SHIP_SILHOUETTES.sub : SHIP_SILHOUETTES.surface;
-  const width = 26 + ship.size * 16;
+  const width = 45 + ship.size * 32;
   return (
     `<svg class="ship-figure" viewBox="0 0 124 40" width="${width}" height="${Math.round(
       width / 3.1
