@@ -133,53 +133,42 @@ header {
   flex-direction: column;
   align-items: center;
   background: #ffffff;
-  border: 1px solid #c2c4c6;
-  border-radius: 5px;
-  padding: 11px 14px 9px;
+  border: 6px solid #111;
+  border-radius: 16px;
+  padding: 12px 16px 14px;
   line-height: 1;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .mb-letters {
-  position: relative;
-  font-family: var(--display);
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: 900;
-  font-size: 3.9rem;
-  color: #d11e0f;
-  letter-spacing: -3px;
+  font-size: 4.2rem;
+  letter-spacing: -2px;
 }
 
-.mb-reg {
-  font-size: 0.26em;
-  font-weight: 700;
-  vertical-align: super;
-  margin-left: 1px;
-  color: #d11e0f;
+.mb-m {
+  color: #e0231f;
 }
 
-/* thin red rule under the MB, like the box logo */
-.mb-rule {
-  width: 100%;
-  height: 3px;
-  margin: 1px 0 4px;
-  background: #d11e0f;
+.mb-b {
+  color: #2f74ee;
 }
 
 .mb-sub {
-  font-size: 1.04rem;
-  font-weight: 700;
-  letter-spacing: -0.4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 900;
+  font-size: 1.32rem;
+  letter-spacing: -0.3px;
   color: #111;
 }
 
-.mb-maliq {
-  color: #111;
-  font-weight: 500;
-}
-
-.mb-bradley {
-  color: #111;
-  font-weight: 800;
+.mb-line {
+  line-height: 1.02;
 }
 
 .logo-banner {
@@ -247,7 +236,8 @@ header {
   text-transform: uppercase;
   letter-spacing: 0.02em;
   line-height: 1.02;
-  font-size: clamp(1.7rem, 5.2vw, 3.2rem);
+  /* 0.441x the wordmark so the line spans exactly from the A to the I */
+  font-size: clamp(2.03rem, 7.06vw, 3.53rem);
   color: #ffffff;
   /* crisp dark outline + hard offset shadow (no blur) so it stays sharp */
   -webkit-text-stroke: 2px #11161a;
