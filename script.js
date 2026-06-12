@@ -106,6 +106,13 @@ class AudioController {
     this.sonar.volume = 0.55;
     this.sonar.preload = "auto";
 
+    // Prince Mode battle track (replaces the normal battle music).
+    this.princeMode = false;
+    this.prince = new Audio("assets/purple.mp3");
+    this.prince.loop = true;
+    this.prince.volume = 0.5;
+    this.prince.preload = "auto";
+
     this.sfxSrc = {
       splash: "assets/splash.wav",
       explosion: "assets/explosion.wav",
@@ -172,13 +179,22 @@ class AudioController {
   /** Returns a promise resolving true once the track is actually playing. */
   startMusic() {
     if (!this.musicOn) return Promise.resolve(false);
-    const p = this.music.play();
+    const track = this.princeMode ? this.prince : this.music;
+    const p = track.play();
     if (p && typeof p.then === "function") return p.then(() => true).catch(() => false);
     return Promise.resolve(true);
   }
 
   stopMusic() {
     this.music.pause();
+    this.prince.pause();
+  }
+
+  /** Switch the battle track between the normal music and the Prince track. */
+  setPrinceMode(on) {
+    this.princeMode = on;
+    if (on) this.music.pause();
+    else this.prince.pause();
   }
 
   /** Looping sonar ambience for the welcome/placement screen. */
@@ -546,6 +562,9 @@ class Game {
     this.overlayMessage = document.getElementById("overlay-message");
     this.otter = document.getElementById("otter");
     this.otterImg = document.getElementById("otter-img");
+    this.logoImg = document.querySelector(".logo-img");
+    this.princeBtn = document.getElementById("prince-mode");
+    this.princeMode = false;
     this.shipyardEl = document.getElementById("shipyard");
     this.statShots = document.getElementById("stat-shots");
     this.statHits = document.getElementById("stat-hits");
@@ -614,6 +633,11 @@ class Game {
       });
     };
     for (const ev of kickEvents) document.addEventListener(ev, kickAudio);
+    this.princeBtn.addEventListener("click", () => {
+      this.audio.resume();
+      this.setPrinceMode(this.princeBtn.getAttribute("aria-pressed") !== "true");
+    });
+
     const sfx = document.getElementById("toggle-sfx");
     sfx.addEventListener("click", () => {
       const on = sfx.getAttribute("aria-pressed") !== "true";
@@ -648,6 +672,21 @@ class Game {
     return Promise.resolve(false);
   }
 
+  /** Toggle the purple "Prince Mode" theme, logo, and battle track. */
+  setPrinceMode(on) {
+    this.princeMode = on;
+    document.body.classList.toggle("prince-mode", on);
+    this.princeBtn.setAttribute("aria-pressed", String(on));
+    this.logoImg.src = on
+      ? "assets/logo-battleship-prince.png"
+      : "assets/logo-battleship.png";
+    this.audio.setPrinceMode(on);
+    if (this.phase === Phase.BATTLE) {
+      this.audio.stopMusic();
+      this.audio.startMusic();
+    }
+  }
+
   setDifficulty(value) {
     if (!CHEAT_CHANCE.hasOwnProperty(value)) return;
     this.difficulty = value;
@@ -661,6 +700,7 @@ class Game {
 
   start() {
     this.audio.stopEndMusic();
+    this.setPrinceMode(false);
     this.enemyBoard.hideShips = true;
     this.enemyBoard.reset();
     this.enemyBoard.buildDom();
@@ -922,7 +962,9 @@ class Game {
 
     this.otter.classList.toggle("win", playerWon);
     this.otter.classList.toggle("lose", !playerWon);
-    this.otterImg.src = playerWon ? "assets/otter-win.png" : "assets/otter-lose.png";
+    const winSrc = this.princeMode ? "assets/otter-win-prince.png" : "assets/otter-win.png";
+    const loseSrc = this.princeMode ? "assets/otter-lose-prince.png" : "assets/otter-lose.png";
+    this.otterImg.src = playerWon ? winSrc : loseSrc;
     this.overlayTitle.textContent = playerWon ? "You Win!" : "You Lost!";
     this.overlayMessage.textContent = playerWon
       ? "Admiral Devin salutes you — the enemy fleet is sunk!"
