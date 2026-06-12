@@ -636,14 +636,10 @@ h2 {
   font-size: 0.85rem;
 }
 
-/* Start Battle pulled to the bottom (where Restart Game sits), colored green. */
-.start-battle-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 2.2rem;
-}
-
+/* Start Battle lives in the footer (bottom of page), colored green.
+   The footer swaps between Start Battle (placement) and Restart Game (battle/over). */
 #start-battle {
+  display: none;
   background: linear-gradient(#36c46f, #1c8244);
   border-color: #0f5a2c;
   color: #f1ffe9;
@@ -662,8 +658,11 @@ h2 {
   filter: none;
 }
 
-/* The footer Restart Game button is replaced by Start Battle during placement. */
-body.phase-place footer {
+body.phase-place #start-battle {
+  display: inline-block;
+}
+
+body.phase-place #restart {
   display: none;
 }
 
