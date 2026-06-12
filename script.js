@@ -49,18 +49,24 @@ function shipSilhouetteSVG(ship) {
 }
 
 /* ------------------------------------------------------------------ *
- * Audio: all sounds are synthesized with the Web Audio API so the
- * project stays dependency-free and ships no copyrighted material.
+ * Audio: background music and sound effects play from bundled audio
+ * files; the win/lose fanfare is a short synthesized flourish.
  * ------------------------------------------------------------------ */
 class AudioController {
   constructor() {
     this.ctx = null;
-    this.musicGain = null;
-    this.sfxGain = null;
     this.musicOn = true;
     this.sfxOn = true;
-    this.musicTimer = null;
-    this.step = 0;
+
+    this.music = new Audio("assets/music.mp3");
+    this.music.loop = true;
+    this.music.volume = 0.45;
+    this.music.preload = "auto";
+
+    this.sfxSrc = {
+      splash: "assets/splash.wav",
+      explosion: "assets/explosion.wav",
+    };
   }
 
   ensure() {
@@ -68,12 +74,6 @@ class AudioController {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
     this.ctx = new Ctx();
-    this.musicGain = this.ctx.createGain();
-    this.musicGain.gain.value = 0.18;
-    this.musicGain.connect(this.ctx.destination);
-    this.sfxGain = this.ctx.createGain();
-    this.sfxGain.gain.value = 0.9;
-    this.sfxGain.connect(this.ctx.destination);
   }
 
   resume() {
@@ -81,68 +81,21 @@ class AudioController {
     if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
   }
 
-  noiseBuffer(duration) {
-    const len = Math.floor(this.ctx.sampleRate * duration);
-    const buffer = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
-    return buffer;
+  playSfx(name, volume) {
+    if (!this.sfxOn) return;
+    const src = this.sfxSrc[name];
+    if (!src) return;
+    const a = new Audio(src);
+    a.volume = volume;
+    a.play().catch(() => {});
   }
 
   splash() {
-    if (!this.sfxOn) return;
-    this.ensure();
-    if (!this.ctx) return;
-    const t = this.ctx.currentTime;
-    const src = this.ctx.createBufferSource();
-    src.buffer = this.noiseBuffer(0.4);
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.setValueAtTime(900, t);
-    filter.frequency.exponentialRampToValueAtTime(2600, t + 0.35);
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.7, t + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.sfxGain);
-    src.start(t);
-    src.stop(t + 0.42);
+    this.playSfx("splash", 0.7);
   }
 
   explosion() {
-    if (!this.sfxOn) return;
-    this.ensure();
-    if (!this.ctx) return;
-    const t = this.ctx.currentTime;
-    // noise burst
-    const src = this.ctx.createBufferSource();
-    src.buffer = this.noiseBuffer(0.6);
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(1800, t);
-    filter.frequency.exponentialRampToValueAtTime(120, t + 0.5);
-    const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0.9, t);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.sfxGain);
-    src.start(t);
-    src.stop(t + 0.6);
-    // low boom
-    const osc = this.ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(160, t);
-    osc.frequency.exponentialRampToValueAtTime(40, t + 0.5);
-    const og = this.ctx.createGain();
-    og.gain.setValueAtTime(0.9, t);
-    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
-    osc.connect(og);
-    og.connect(this.sfxGain);
-    osc.start(t);
-    osc.stop(t + 0.55);
+    this.playSfx("explosion", 0.85);
   }
 
   fanfare(win) {
@@ -160,63 +113,21 @@ class AudioController {
       g.gain.exponentialRampToValueAtTime(0.5, t + 0.03);
       g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
       osc.connect(g);
-      g.connect(this.sfxGain);
+      g.connect(this.ctx.destination);
       osc.start(t);
       osc.stop(t + 0.3);
       t += 0.18;
     }
   }
 
-  /* An original, march-style instrumental loop (no copyrighted melody). */
   startMusic() {
-    this.ensure();
-    if (!this.ctx || this.musicTimer || !this.musicOn) return;
-    const bass = [110, 110, 146.83, 110, 130.81, 130.81, 98, 98];
-    const lead = [
-      329.63, 392, 440, 392, 329.63, 293.66, 329.63, 0,
-      349.23, 392, 440, 523.25, 493.88, 440, 392, 0,
-    ];
-    this.step = 0;
-    const interval = 300; // ms per eighth note
-    const playNote = (freq, dur, type, gainVal, dest) => {
-      if (!freq) return;
-      const t = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      osc.type = type;
-      osc.frequency.value = freq;
-      const g = this.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(gainVal, t + 0.03);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      osc.connect(g);
-      g.connect(dest);
-      osc.start(t);
-      osc.stop(t + dur + 0.02);
-    };
-    this.musicTimer = setInterval(() => {
-      const s = this.step;
-      playNote(bass[s % bass.length], 0.28, "triangle", 0.6, this.musicGain);
-      playNote(lead[s % lead.length], 0.26, "square", 0.32, this.musicGain);
-      // snare-ish tick on the off-beats
-      if (s % 2 === 1 && this.ctx) {
-        const src = this.ctx.createBufferSource();
-        src.buffer = this.noiseBuffer(0.05);
-        const g = this.ctx.createGain();
-        g.gain.setValueAtTime(0.25, this.ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.05);
-        src.connect(g);
-        g.connect(this.musicGain);
-        src.start();
-      }
-      this.step = (s + 1) % 16;
-    }, interval);
+    if (!this.musicOn) return;
+    const p = this.music.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
   }
 
   stopMusic() {
-    if (this.musicTimer) {
-      clearInterval(this.musicTimer);
-      this.musicTimer = null;
-    }
+    this.music.pause();
   }
 
   setMusic(on) {
