@@ -121,7 +121,9 @@ header {
 
 .rail-company {
   margin: auto 0 0;
-  padding-top: 1rem;
+  width: 100%;
+  align-self: stretch;
+  text-align: left;
   font-size: 0.75rem;
   line-height: 1.35;
   letter-spacing: 0.02em;
@@ -203,7 +205,7 @@ header {
   font-weight: 900;
   font-size: clamp(4.6rem, 16vw, 8rem);
   line-height: 1;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.03em;
   /* The yellow->orange gradient is clipped to the glyphs themselves, so the
      fill follows every curve (including the P's bowl). The dark-red outline
      and bevel are built from stacked drop-shadows instead of
