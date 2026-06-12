@@ -494,29 +494,36 @@ h2 {
   height: var(--h);
   opacity: 0;
   transform: translateY(-40vh);
-  border-radius: 60% 60% 50% 50% / 92% 92% 14% 14%;
+  /* faint trailing streak of water left behind as the drop runs down */
+  border-radius: 50%;
   background: linear-gradient(
     to bottom,
-    rgba(150, 102, 222, 0) 0%,
-    rgba(150, 102, 222, calc(var(--o) * 0.45)) 65%,
-    rgba(190, 146, 255, var(--o)) 100%
+    rgba(170, 120, 235, 0) 0%,
+    rgba(170, 120, 235, calc(var(--o) * 0.32)) 80%,
+    rgba(170, 120, 235, 0) 100%
   );
-  filter: drop-shadow(0 0 4px rgba(150, 90, 230, 0.55));
+  filter: drop-shadow(0 0 3px rgba(150, 90, 230, 0.4));
   animation: rain-run var(--dur) cubic-bezier(0.45, 0.05, 0.6, 1) var(--delay) forwards;
 }
 
-/* Glossy droplet head that leads the streak. */
+/* The droplet itself: a teardrop with a rounded bottom tapering to a point on top. */
 .raindrop::after {
   content: "";
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: calc(var(--w) * 1.5);
-  height: calc(var(--w) * 1.5);
-  transform: translate(-50%, 30%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 30%, #e3d2ff, #8a5cff 58%, rgba(120, 70, 210, 0.25) 100%);
-  box-shadow: 0 0 8px rgba(160, 100, 240, 0.7);
+  width: calc(var(--w) * 2.1);
+  height: calc(var(--w) * 2.1);
+  transform: translate(-50%, 20%) rotate(45deg);
+  border-radius: 0 50% 50% 50%;
+  background: radial-gradient(
+    circle at 35% 32%,
+    #efe4ff 0%,
+    #b48cff 42%,
+    #7a4ad6 78%,
+    #5e34b0 100%
+  );
+  box-shadow: 0 0 9px rgba(150, 90, 230, 0.7);
 }
 
 @keyframes rain-run {
