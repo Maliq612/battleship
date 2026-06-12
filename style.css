@@ -45,6 +45,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 1.5rem 1rem 3rem;
+  padding-left: calc(96px + 1rem);
 
   /* Embossed diamond-plate (tread-plate) steel background */
   background-color: #23272b;
@@ -70,34 +71,60 @@ header {
   padding: 0.4rem 0.5rem;
 }
 
-.mb-badge {
-  position: absolute;
-  top: -6px;
-  left: -6px;
+/* Light-gray side strip running down the full left edge (like the box). */
+.side-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 96px;
+  background: linear-gradient(90deg, #eceded 0%, #d4d6d8 65%, #b7babd 100%);
+  border-right: 2px solid #1d1f21;
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.55);
+  z-index: 50;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #f3f4f4;
-  border: 2px solid #b9bdbf;
-  border-radius: 3px;
-  padding: 2px 5px;
+  padding-top: 14px;
+}
+
+.mb-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #c2c4c6;
+  border-radius: 4px;
+  padding: 7px 8px 6px;
   line-height: 1;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
 }
 
 .mb-letters {
   font-family: var(--display);
   font-weight: 900;
-  font-size: 0.95rem;
+  font-size: 2.6rem;
   color: #c0392b;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
+}
+
+.mb-dot {
+  color: #111;
 }
 
 .mb-sub {
-  font-size: 0.34rem;
-  letter-spacing: 0.04em;
-  color: #444;
-  text-transform: uppercase;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.mb-maliq {
+  color: #c0392b;
+}
+
+.mb-bradley {
+  color: #111;
 }
 
 .logo-banner {
