@@ -600,19 +600,20 @@ class Game {
       if (on) this.resumePhaseAudio();
     });
 
-    // Browsers block autoplay until the first user gesture; kick off the
-    // phase audio on each interaction until it actually starts (a blocked
-    // first attempt must not consume the listener).
+    // Browsers block autoplay until the first user gesture. Safari only
+    // accepts "click"/"touchend" (not pointerdown/mousedown) as a valid
+    // media-unlock gesture, so we listen on those too, and keep retrying on
+    // each interaction until the track actually starts (a blocked attempt
+    // must not consume the listener).
+    const kickEvents = ["click", "touchend", "pointerdown", "keydown"];
     const kickAudio = () => {
       this.audio.resume();
       this.resumePhaseAudio().then((started) => {
         if (!started) return;
-        document.removeEventListener("pointerdown", kickAudio);
-        document.removeEventListener("keydown", kickAudio);
+        for (const ev of kickEvents) document.removeEventListener(ev, kickAudio);
       });
     };
-    document.addEventListener("pointerdown", kickAudio);
-    document.addEventListener("keydown", kickAudio);
+    for (const ev of kickEvents) document.addEventListener(ev, kickAudio);
     const sfx = document.getElementById("toggle-sfx");
     sfx.addEventListener("click", () => {
       const on = sfx.getAttribute("aria-pressed") !== "true";
