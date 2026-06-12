@@ -592,7 +592,7 @@ class Game {
     this.difficultyBtns = Array.from(document.querySelectorAll(".difficulty-btn"));
 
     // Placement state
-    this.placement = { horizontal: true, selected: null, remaining: [] };
+    this.placement = { horizontal: true, selected: null, remaining: [], hover: null };
 
     this.bindEvents();
     this.start();
@@ -603,7 +603,10 @@ class Game {
 
     this.playerBoard.element.addEventListener("click", (e) => this.onPlayerBoardClick(e));
     this.playerBoard.element.addEventListener("mousemove", (e) => this.onPlayerHover(e));
-    this.playerBoard.element.addEventListener("mouseleave", () => this.clearPreview());
+    this.playerBoard.element.addEventListener("mouseleave", () => {
+      this.placement.hover = null;
+      this.clearPreview();
+    });
 
     document.getElementById("restart").addEventListener("click", () => this.start());
     document.getElementById("play-again").addEventListener("click", () => this.start());
@@ -781,6 +784,7 @@ class Game {
     this.setStatus(
       "Orientation: " + (this.placement.horizontal ? "horizontal" : "vertical")
     );
+    this.renderPreview();
   }
 
   cellFromEvent(event) {
@@ -790,9 +794,15 @@ class Game {
   }
 
   onPlayerHover(event) {
-    if (this.phase !== Phase.PLACE || !this.placement.selected) return;
-    const pos = this.cellFromEvent(event);
+    this.placement.hover = this.cellFromEvent(event);
+    this.renderPreview();
+  }
+
+  /** Draw the placement preview at the last hovered cell (orientation-aware). */
+  renderPreview() {
     this.clearPreview();
+    if (this.phase !== Phase.PLACE || !this.placement.selected) return;
+    const pos = this.placement.hover;
     if (!pos) return;
     const { size } = this.placement.selected;
     const h = this.placement.horizontal;
@@ -979,9 +989,10 @@ class Game {
     const loseSrc = this.princeMode ? "assets/otter-lose-prince.png" : "assets/otter-lose.png";
     this.otterImg.src = playerWon ? winSrc : loseSrc;
     this.overlayTitle.textContent = playerWon ? "You Win!" : "You Lost!";
+    const devin = this.princeMode ? "Prince Devin" : "Admiral Devin";
     this.overlayMessage.textContent = playerWon
-      ? "Admiral Devin salutes you — the enemy fleet is sunk!"
-      : "Admiral Devin is laughing — your fleet went down.";
+      ? `${devin} salutes you — the enemy fleet is sunk!`
+      : `${devin} is laughing — your fleet went down.`;
     this.overlay.classList.remove("hidden");
     this.setStatus(playerWon ? "You win!" : "You lose!");
   }

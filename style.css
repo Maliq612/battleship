@@ -636,6 +636,37 @@ h2 {
   font-size: 0.85rem;
 }
 
+/* Start Battle pulled to the bottom (where Restart Game sits), colored green. */
+.start-battle-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.2rem;
+}
+
+#start-battle {
+  background: linear-gradient(#36c46f, #1c8244);
+  border-color: #0f5a2c;
+  color: #f1ffe9;
+  box-shadow: 0 4px 0 #0c4a24, 0 6px 10px rgba(0, 0, 0, 0.5);
+}
+
+#start-battle:active {
+  box-shadow: 0 1px 0 #0c4a24, 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#start-battle:disabled {
+  background: linear-gradient(#7c8a80, #586259);
+  border-color: #41483f;
+  box-shadow: 0 4px 0 #353b34, 0 6px 10px rgba(0, 0, 0, 0.45);
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* The footer Restart Game button is replaced by Start Battle during placement. */
+body.phase-place footer {
+  display: none;
+}
+
 /* ---------------- Fleet trackers (battleshiponline-style) ---------------- */
 .tracker {
   /* equal fixed width so the enemy/player [board + tracker] blocks match,
