@@ -210,6 +210,7 @@ class Game {
   }
 
   start() {
+    this.enemyBoard.hideShips = true;
     this.enemyBoard.reset();
     this.enemyBoard.buildDom();
     this.playerBoard.reset();
