@@ -662,8 +662,10 @@ class Game {
     for (const ev of kickEvents) document.addEventListener(ev, kickAudio);
     this.princeBtn.addEventListener("click", () => {
       this.audio.resume();
-      this.setPrinceMode(this.princeBtn.getAttribute("aria-pressed") !== "true");
+      const turningOn = this.princeBtn.getAttribute("aria-pressed") !== "true";
+      this.setPrinceMode(turningOn);
       window.scrollTo({ top: 0, behavior: "smooth" });
+      if (turningOn) this.playRainTransition();
     });
 
     const sfx = document.getElementById("toggle-sfx");
@@ -705,6 +707,8 @@ class Game {
     this.princeMode = on;
     document.body.classList.toggle("prince-mode", on);
     this.princeBtn.setAttribute("aria-pressed", String(on));
+    const princeLabel = this.princeBtn.querySelector("span");
+    if (princeLabel) princeLabel.textContent = on ? "Classic Mode" : "Prince Mode";
     this.logoImg.src = on
       ? "assets/logo-battleship-prince.png"
       : "assets/logo-battleship.png";
@@ -713,6 +717,80 @@ class Game {
       this.audio.stopMusic();
       this.audio.startMusic();
     }
+  }
+
+  /** SVG markup for a single purple teardrop (point on top, bulb on bottom). */
+  teardropSVG(id) {
+    return (
+      `<svg viewBox="0 0 100 170" xmlns="http://www.w3.org/2000/svg">` +
+      `<defs><linearGradient id="pg${id}" x1="0" y1="0" x2="0" y2="1">` +
+      `<stop offset="0" stop-color="#c9acff"/>` +
+      `<stop offset="55%" stop-color="#9a6cf0"/>` +
+      `<stop offset="100%" stop-color="#6e3fcf"/>` +
+      `</linearGradient></defs>` +
+      `<path d="M50 6 C60 64 98 88 98 118 A48 48 0 1 1 2 118 C2 88 40 64 50 6 Z" fill="url(#pg${id})"/>` +
+      `<ellipse cx="36" cy="106" rx="9" ry="15" fill="rgba(255,255,255,0.5)"/>` +
+      `</svg>`
+    );
+  }
+
+  /**
+   * Prince Mode transition: purple teardrops fall from the top and burst into
+   * splash crowns at the bottom. Runs for ~4 seconds, then clears.
+   */
+  playRainTransition() {
+    const existing = document.querySelector(".rain-overlay");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.className = "rain-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.appendChild(overlay);
+
+    const TOTAL = 4000;
+    const splashCutoff = TOTAL - 700;
+    const count = 54;
+    for (let i = 0; i < count; i++) {
+      const drop = document.createElement("span");
+      drop.className = "pdrop";
+      const x = Math.random() * 100;
+      const delay = Math.random() * 2.3;
+      const dur = 0.75 + Math.random() * 0.3;
+      drop.style.setProperty("--x", x.toFixed(2) + "vw");
+      drop.style.setProperty("--w", (10 + Math.random() * 15).toFixed(1) + "px");
+      drop.style.setProperty("--delay", delay.toFixed(2) + "s");
+      drop.style.setProperty("--dur", dur.toFixed(2) + "s");
+      drop.innerHTML = this.teardropSVG(i);
+      overlay.appendChild(drop);
+
+      const landMs = (delay + dur * 0.96) * 1000;
+      if (landMs < splashCutoff) {
+        setTimeout(() => this.spawnSplash(overlay, x), landMs);
+      }
+    }
+
+    setTimeout(() => overlay.remove(), TOTAL);
+  }
+
+  /** Spawn a splash crown of little droplets at the given x (vw) along the bottom. */
+  spawnSplash(overlay, xVw) {
+    if (!overlay.isConnected) return;
+    const splash = document.createElement("div");
+    splash.className = "splash";
+    splash.style.setProperty("--x", xVw.toFixed(2) + "vw");
+    const n = 5 + Math.floor(Math.random() * 3);
+    for (let j = 0; j < n; j++) {
+      const bit = document.createElement("span");
+      const dx = (Math.random() * 2 - 1) * (16 + Math.random() * 20);
+      const peak = -(14 + Math.random() * 18);
+      bit.style.setProperty("--dx", dx.toFixed(1) + "px");
+      bit.style.setProperty("--peak", peak.toFixed(1) + "px");
+      bit.style.setProperty("--sw", (3 + Math.random() * 3).toFixed(1) + "px");
+      bit.style.setProperty("--sdur", (0.45 + Math.random() * 0.25).toFixed(2) + "s");
+      splash.appendChild(bit);
+    }
+    overlay.appendChild(splash);
+    setTimeout(() => splash.remove(), 800);
   }
 
   setDifficulty(value) {
@@ -807,6 +885,9 @@ class Game {
     this.setStatus(
       "Orientation: " + (this.placement.horizontal ? "horizontal" : "vertical")
     );
+    if (this.placement.dragging && this.placement.dragType) {
+      this.applyGhostShape(this.placement.dragType);
+    }
     this.renderPreview();
   }
 
@@ -872,6 +953,7 @@ class Game {
     this.clearPreview();
     this.renderShipyard();
     this.playerBoard.render();
+    this.renderFleets();
     if (this.placement.remaining.length === 0) {
       this.setStatus("Fleet positioned. Press Start Battle when ready.");
     }
@@ -897,19 +979,25 @@ class Game {
     this.placement.dragType = type;
     this.highlightSelected();
 
+    const ghost = document.createElement("div");
+    ghost.className = "drag-ghost";
+    document.body.appendChild(ghost);
+    this.dragGhost = ghost;
+    this.applyGhostShape(type);
+    this.positionGhost(event.clientX, event.clientY);
+  }
+
+  /** Size and draw the drag ghost for the current orientation. */
+  applyGhostShape(type) {
+    if (!this.dragGhost) return;
     const cellRect = this.playerBoard.cellEls[0][0].getBoundingClientRect();
     const cell = cellRect.width || 28;
     const h = this.placement.horizontal;
     const w = h ? cell * type.size : cell;
     const ht = h ? cell : cell * type.size;
-    const ghost = document.createElement("div");
-    ghost.className = "drag-ghost";
-    ghost.style.width = w + "px";
-    ghost.style.height = ht + "px";
-    ghost.innerHTML = boardShipSVG(type, w, ht, h);
-    document.body.appendChild(ghost);
-    this.dragGhost = ghost;
-    this.positionGhost(event.clientX, event.clientY);
+    this.dragGhost.style.width = w + "px";
+    this.dragGhost.style.height = ht + "px";
+    this.dragGhost.innerHTML = boardShipSVG(type, w, ht, h);
   }
 
   positionGhost(x, y) {
@@ -951,6 +1039,7 @@ class Game {
     this.clearPreview();
     this.renderShipyard();
     this.playerBoard.render();
+    this.renderFleets();
     this.setStatus("Fleet positioned at random. Press Start Battle when ready.");
   }
 
@@ -961,6 +1050,7 @@ class Game {
     this.clearPreview();
     this.renderShipyard();
     this.playerBoard.render();
+    this.renderFleets();
     this.setStatus("Board cleared — position your fleet.");
   }
 
@@ -1106,7 +1196,21 @@ class Game {
 
   renderFleet(listEl, board) {
     listEl.innerHTML = "";
-    const ships = board.ships.length
+    // During placement the player's tracker doubles as a drag source: show all
+    // ship types and let the unplaced ones be dragged straight onto the board.
+    const placeSource =
+      this.phase === Phase.PLACE && board === this.playerBoard;
+    const remainingNames = placeSource
+      ? new Set(this.placement.remaining.map((t) => t.name))
+      : null;
+    const ships = placeSource
+      ? SHIP_TYPES.map((t) => ({
+          ...t,
+          hits: 0,
+          isSunk: false,
+          placed: !remainingNames.has(t.name),
+        }))
+      : board.ships.length
       ? board.ships
       : SHIP_TYPES.map((t) => ({ ...t, hits: 0, isSunk: false }));
     for (const ship of ships) {
@@ -1122,6 +1226,16 @@ class Game {
         sunk.className = "sunk-label";
         sunk.textContent = "SUNK";
         fig.appendChild(sunk);
+      }
+
+      if (placeSource) {
+        if (ship.placed) {
+          li.classList.add("fleet-placed");
+        } else {
+          li.classList.add("fleet-draggable");
+          const type = this.placement.remaining.find((t) => t.name === ship.name);
+          li.addEventListener("mousedown", (e) => this.beginShipDrag(type, e));
+        }
       }
 
       li.appendChild(fig);
