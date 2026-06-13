@@ -439,7 +439,7 @@ class Board {
 }
 
 /**
- * Computer opponent with four difficulty levels:
+ * Computer opponent with five difficulty levels:
  *   easy       - fires at random cells it has not fired at yet.
  *   medium     - random search, but after a hit it hunts the orthogonal
  *                neighbours until the wounded ship is sunk.
@@ -447,10 +447,17 @@ class Board {
  *                hit 33% of the time (peeking at the board); otherwise random.
  *   impossible - search shots hit 90% of the time, and while hunting it steers
  *                75% of its shots straight onto an adjacent ship segment.
+ *   devin      - a fair, no-peeking strategist: every turn it builds a
+ *                probability-density map of where the remaining ships can still
+ *                fit (given its own hits/misses) and fires at the most likely
+ *                cell, concentrating on un-sunk hits to finish wounded ships.
  */
-const CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0.33, impossible: 0.9 };
+const CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0.33, impossible: 0.9, devin: 0 };
 // Chance a *hunt* shot (after a hit) is steered onto a real ship segment.
-const HUNT_CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0, impossible: 0.75 };
+const HUNT_CHEAT_CHANCE = { easy: 0, medium: 0, hard: 0, impossible: 0.75, devin: 0 };
+
+// Shot outcomes the Devin AI remembers about its own fire.
+const Shot = { UNKNOWN: 0, MISS: 1, HIT: 2 };
 
 class AiPlayer {
   constructor(difficulty = "easy") {
@@ -472,6 +479,10 @@ class AiPlayer {
     }
     // Cells queued for "hunt" mode after landing a hit (medium+).
     this.targetQueue = [];
+    // Devin AI memory: what it has learned from its own shots.
+    this.result = createMatrix(BOARD_SIZE, Shot.UNKNOWN);
+    this.sunkCells = createMatrix(BOARD_SIZE, false);
+    this.remainingSizes = SHIP_TYPES.map((t) => t.size);
   }
 
   usesHunt() {
@@ -504,6 +515,12 @@ class AiPlayer {
   nextTarget(board) {
     if (this.available.length === 0) return null;
 
+    // Devin AI: pick the highest-probability cell from a fresh density map.
+    if (this.difficulty === "devin") {
+      const pos = this.devinTarget();
+      return this.take(pos || this.available[randomInt(this.available.length)]);
+    }
+
     // Hunt mode: work through cells adjacent to a previous hit first.
     if (this.usesHunt()) {
       // Impossible steers most hunt shots straight onto a queued ship segment.
@@ -531,8 +548,19 @@ class AiPlayer {
     return this.take(this.available[index]);
   }
 
-  /** Update hunt state after a shot resolves (medium+). */
+  /** Update memory (Devin AI) and hunt state (medium+) after a shot resolves. */
   registerResult(pos, shot) {
+    // Record what every shot taught the Devin strategist.
+    this.result[pos.row][pos.col] = shot.result === "hit" ? Shot.HIT : Shot.MISS;
+    if (shot.result === "hit" && shot.ship && shot.ship.isSunk) {
+      for (const { row, col } of shot.ship.cells) {
+        this.sunkCells[row][col] = true;
+        this.result[row][col] = Shot.HIT;
+      }
+      const i = this.remainingSizes.indexOf(shot.ship.size);
+      if (i !== -1) this.remainingSizes.splice(i, 1);
+    }
+
     if (!this.usesHunt() || shot.result !== "hit") return;
     if (shot.ship && shot.ship.isSunk) {
       // Ship destroyed: abandon the hunt and go back to searching.
@@ -551,6 +579,79 @@ class AiPlayer {
       if (this.targetQueue.some((q) => q.row === n.row && q.col === n.col)) continue;
       this.targetQueue.push(n);
     }
+  }
+
+  /**
+   * Devin AI's move: build a probability-density map of every legal placement
+   * of each remaining ship that is consistent with what it has learned (no
+   * peeking at the real board), then fire at the most likely un-fired cell.
+   * Placements that cover an as-yet-unsunk hit are weighted heavily, so it
+   * naturally finishes off wounded ships before resuming a parity search.
+   */
+  devinTarget() {
+    const heat = createMatrix(BOARD_SIZE, 0);
+    const activeHits = [];
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (this.result[r][c] === Shot.HIT && !this.sunkCells[r][c]) {
+          activeHits.push({ row: r, col: c });
+        }
+      }
+    }
+    const targeting = activeHits.length > 0;
+
+    for (const size of this.remainingSizes) {
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          for (const horizontal of [true, false]) {
+            const cells = this.placementCells(r, c, size, horizontal);
+            if (!cells) continue;
+            let coversActive = 0;
+            for (const cell of cells) {
+              if (this.result[cell.row][cell.col] === Shot.HIT) coversActive += 1;
+            }
+            if (targeting && coversActive === 0) continue;
+            const weight = targeting ? coversActive * coversActive : 1;
+            for (const cell of cells) {
+              if (this.result[cell.row][cell.col] === Shot.UNKNOWN) {
+                heat[cell.row][cell.col] += weight;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    let best = null;
+    let bestScore = -1;
+    for (let r = 0; r < BOARD_SIZE; r++) {
+      for (let c = 0; c < BOARD_SIZE; c++) {
+        if (this.result[r][c] !== Shot.UNKNOWN || this.fired[r][c]) continue;
+        if (heat[r][c] > bestScore) {
+          bestScore = heat[r][c];
+          best = { row: r, col: c };
+        }
+      }
+    }
+    return bestScore > 0 ? best : null;
+  }
+
+  /**
+   * Return the cells a ship of `size` would occupy from (row, col) in the
+   * given orientation, or null if that placement is impossible given what the
+   * AI knows (off-board, over a miss, or over a sunk ship's cell).
+   */
+  placementCells(row, col, size, horizontal) {
+    const cells = [];
+    for (let i = 0; i < size; i++) {
+      const r = row + (horizontal ? 0 : i);
+      const c = col + (horizontal ? i : 0);
+      if (r >= BOARD_SIZE || c >= BOARD_SIZE) return null;
+      if (this.result[r][c] === Shot.MISS) return null;
+      if (this.sunkCells[r][c]) return null;
+      cells.push({ row: r, col: c });
+    }
+    return cells;
   }
 }
 
@@ -582,12 +683,14 @@ class Game {
     this.statShots = document.getElementById("stat-shots");
     this.statHits = document.getElementById("stat-hits");
     this.statRate = document.getElementById("stat-rate");
+    this.statStreak = document.getElementById("stat-streak");
     this.enemyScore = document.getElementById("enemy-score");
 
     this.busy = false;
     this.phase = Phase.PLACE;
     this.shots = 0;
     this.hits = 0;
+    this.winStreak = Number(localStorage.getItem("bs-win-streak")) || 0;
     this.difficulty = "easy";
     this.difficultyBtns = Array.from(document.querySelectorAll(".difficulty-btn"));
 
@@ -819,6 +922,7 @@ class Game {
     this.busy = false;
     this.shots = 0;
     this.hits = 0;
+    this.sunkAnimated = new WeakSet();
     this.updateStats();
 
     this.placement.horizontal = true;
@@ -1078,7 +1182,7 @@ class Game {
     this.updateStats();
 
     const cell = this.enemyBoard.cellEls[pos.row][pos.col];
-    this.playEffect(cell, shot);
+    this.playEffect(cell, shot, this.enemyBoard);
     this.enemyBoard.render();
     this.renderFleets();
 
@@ -1110,7 +1214,7 @@ class Game {
     const shot = this.playerBoard.receiveShot(target.row, target.col);
     this.ai.registerResult(target, shot);
     const cell = this.playerBoard.cellEls[target.row][target.col];
-    this.playEffect(cell, shot);
+    this.playEffect(cell, shot, this.playerBoard);
     this.playerBoard.render();
     this.renderFleets();
 
@@ -1131,19 +1235,82 @@ class Game {
     this.busy = false;
   }
 
-  playEffect(cell, shot) {
+  playEffect(cell, shot, board) {
     const result = typeof shot === "string" ? shot : shot.result;
     const sunk = typeof shot === "object" && shot.ship && shot.ship.isSunk;
     const fx = document.createElement("span");
     fx.className = result === "hit" ? "fx-explosion" : "fx-splash";
     cell.appendChild(fx);
     setTimeout(() => fx.remove(), 800);
+
     if (result === "hit") {
-      if (sunk) this.audio.sunk();
-      else this.audio.explosion();
+      this.spawnSparks(cell);
+      this.shakeScreen(sunk);
+      if (sunk) {
+        if (board && shot.ship) this.spawnSinkBubbles(board, shot.ship);
+        this.audio.sunk();
+      } else {
+        this.audio.explosion();
+      }
     } else {
+      this.spawnRipples(cell);
       this.audio.splash();
     }
+  }
+
+  /** A burst of shrapnel sparks flying outward from a hit. */
+  spawnSparks(cell) {
+    const burst = document.createElement("span");
+    burst.className = "fx-sparks";
+    const n = 8;
+    for (let i = 0; i < n; i++) {
+      const spark = document.createElement("span");
+      spark.className = "spark";
+      const ang = (360 / n) * i + (Math.random() * 28 - 14);
+      const dist = 13 + Math.random() * 16;
+      spark.style.setProperty("--ang", ang.toFixed(1) + "deg");
+      spark.style.setProperty("--dist", dist.toFixed(1) + "px");
+      burst.appendChild(spark);
+    }
+    cell.appendChild(burst);
+    setTimeout(() => burst.remove(), 700);
+  }
+
+  /** Expanding water rings where a shot misses. */
+  spawnRipples(cell) {
+    const ripple = document.createElement("span");
+    ripple.className = "fx-ripple";
+    cell.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
+  }
+
+  /** Bubbles rising from each cell of a freshly sunk ship. */
+  spawnSinkBubbles(board, ship) {
+    for (const { row, col } of ship.cells) {
+      const cell = board.cellEls[row] && board.cellEls[row][col];
+      if (!cell) continue;
+      const n = 2 + Math.floor(Math.random() * 2);
+      for (let i = 0; i < n; i++) {
+        const bubble = document.createElement("span");
+        bubble.className = "fx-bubble";
+        bubble.style.setProperty("--bx", (Math.random() * 70 + 15).toFixed(0) + "%");
+        bubble.style.setProperty("--bs", (4 + Math.random() * 5).toFixed(1) + "px");
+        bubble.style.animationDelay = (Math.random() * 0.35).toFixed(2) + "s";
+        cell.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 1500);
+      }
+    }
+  }
+
+  /** Briefly shake the board area; harder when a ship is sunk. */
+  shakeScreen(hard) {
+    const main = document.querySelector("main");
+    if (!main) return;
+    const cls = hard ? "shake-hard" : "shake-soft";
+    main.classList.remove("shake-soft", "shake-hard");
+    void main.offsetWidth;
+    main.classList.add(cls);
+    setTimeout(() => main.classList.remove(cls), hard ? 650 : 420);
   }
 
   updateStats() {
@@ -1151,11 +1318,19 @@ class Game {
     this.statHits.textContent = String(this.hits);
     this.statRate.innerHTML =
       this.shots === 0 ? "&mdash;" : Math.round((this.hits / this.shots) * 100) + "%";
+    if (this.statStreak) this.statStreak.textContent = String(this.winStreak);
   }
 
   endGame(playerWon) {
     this.setPhase(Phase.OVER);
     this.busy = false;
+    this.winStreak = playerWon ? this.winStreak + 1 : 0;
+    try {
+      localStorage.setItem("bs-win-streak", String(this.winStreak));
+    } catch (e) {
+      /* localStorage unavailable; streak just won't persist */
+    }
+    this.updateStats();
     this.enemyBoard.hideShips = false;
     this.enemyBoard.render();
     this.renderFleets();
@@ -1216,7 +1391,13 @@ class Game {
     for (const ship of ships) {
       const li = document.createElement("li");
       li.setAttribute("aria-label", ship.isSunk ? `${ship.name} sunk` : ship.name);
-      if (ship.isSunk) li.classList.add("sunk-ship");
+      if (ship.isSunk) {
+        li.classList.add("sunk-ship");
+        if (this.sunkAnimated && !this.sunkAnimated.has(ship)) {
+          li.classList.add("just-sunk");
+          this.sunkAnimated.add(ship);
+        }
+      }
 
       const fig = document.createElement("span");
       fig.className = "ship-fig-wrap";
