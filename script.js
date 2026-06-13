@@ -707,6 +707,8 @@ class Game {
     this.princeMode = on;
     document.body.classList.toggle("prince-mode", on);
     this.princeBtn.setAttribute("aria-pressed", String(on));
+    const princeLabel = this.princeBtn.querySelector("span");
+    if (princeLabel) princeLabel.textContent = on ? "Classic Mode" : "Prince Mode";
     this.logoImg.src = on
       ? "assets/logo-battleship-prince.png"
       : "assets/logo-battleship.png";
@@ -717,10 +719,24 @@ class Game {
     }
   }
 
+  /** SVG markup for a single purple teardrop (point on top, bulb on bottom). */
+  teardropSVG(id) {
+    return (
+      `<svg viewBox="0 0 100 170" xmlns="http://www.w3.org/2000/svg">` +
+      `<defs><linearGradient id="pg${id}" x1="0" y1="0" x2="0" y2="1">` +
+      `<stop offset="0" stop-color="#c9acff"/>` +
+      `<stop offset="55%" stop-color="#9a6cf0"/>` +
+      `<stop offset="100%" stop-color="#6e3fcf"/>` +
+      `</linearGradient></defs>` +
+      `<path d="M50 6 C60 64 98 88 98 118 A48 48 0 1 1 2 118 C2 88 40 64 50 6 Z" fill="url(#pg${id})"/>` +
+      `<ellipse cx="36" cy="106" rx="9" ry="15" fill="rgba(255,255,255,0.5)"/>` +
+      `</svg>`
+    );
+  }
+
   /**
-   * Foggy-glass rain transition: a purple mist veils the screen, tiny droplets
-   * cling like condensation, and larger rivulets slide down leaving trails
-   * before everything runs off the bottom and clears.
+   * Prince Mode transition: purple teardrops fall from the top and burst into
+   * splash crowns at the bottom. Runs for ~4 seconds, then clears.
    */
   playRainTransition() {
     const existing = document.querySelector(".rain-overlay");
@@ -729,48 +745,52 @@ class Game {
     const overlay = document.createElement("div");
     overlay.className = "rain-overlay";
     overlay.setAttribute("aria-hidden", "true");
+    document.body.appendChild(overlay);
 
-    let maxEnd = 0;
-
-    // Condensation: many small droplets scattered across the whole pane.
-    const speckCount = 140;
-    for (let i = 0; i < speckCount; i++) {
-      const speck = document.createElement("span");
-      speck.className = "rain-speck";
-      const delay = Math.random() * 1.3;
-      const dur = 1.8 + Math.random() * 1.9;
-      speck.style.setProperty("--x", (Math.random() * 100).toFixed(2) + "vw");
-      speck.style.setProperty("--y", (Math.random() * 96).toFixed(2) + "vh");
-      speck.style.setProperty("--d", (2 + Math.random() * 6).toFixed(1) + "px");
-      speck.style.setProperty("--delay", delay.toFixed(2) + "s");
-      speck.style.setProperty("--dur", dur.toFixed(2) + "s");
-      overlay.appendChild(speck);
-      maxEnd = Math.max(maxEnd, delay + dur);
-    }
-
-    // Rivulets: larger drops that start scattered and slide off the bottom.
-    const runnerCount = 38;
-    for (let i = 0; i < runnerCount; i++) {
+    const TOTAL = 4000;
+    const splashCutoff = TOTAL - 700;
+    const count = 54;
+    for (let i = 0; i < count; i++) {
       const drop = document.createElement("span");
-      drop.className = "raindrop";
-      const delay = Math.random() * 0.8;
-      const dur = 1.6 + Math.random() * 1.6;
-      drop.style.setProperty("--x", (Math.random() * 100).toFixed(2) + "vw");
-      drop.style.setProperty("--w", (5 + Math.random() * 6).toFixed(1) + "px");
-      drop.style.setProperty("--h", (80 + Math.random() * 180).toFixed(0) + "px");
-      drop.style.setProperty("--start-y", (Math.random() * 80 - 20).toFixed(1) + "vh");
-      drop.style.setProperty("--o", (0.5 + Math.random() * 0.4).toFixed(2));
-      drop.style.setProperty("--drift", (3 + Math.random() * 9).toFixed(1) + "px");
-      drop.style.setProperty("--wob-dur", (1.4 + Math.random() * 1.8).toFixed(2) + "s");
+      drop.className = "pdrop";
+      const x = Math.random() * 100;
+      const delay = Math.random() * 2.3;
+      const dur = 0.75 + Math.random() * 0.3;
+      drop.style.setProperty("--x", x.toFixed(2) + "vw");
+      drop.style.setProperty("--w", (10 + Math.random() * 15).toFixed(1) + "px");
       drop.style.setProperty("--delay", delay.toFixed(2) + "s");
       drop.style.setProperty("--dur", dur.toFixed(2) + "s");
+      drop.innerHTML = this.teardropSVG(i);
       overlay.appendChild(drop);
-      maxEnd = Math.max(maxEnd, delay + dur);
+
+      const landMs = (delay + dur * 0.96) * 1000;
+      if (landMs < splashCutoff) {
+        setTimeout(() => this.spawnSplash(overlay, x), landMs);
+      }
     }
 
-    overlay.style.setProperty("--fog-dur", maxEnd.toFixed(2) + "s");
-    document.body.appendChild(overlay);
-    setTimeout(() => overlay.remove(), (maxEnd + 0.3) * 1000);
+    setTimeout(() => overlay.remove(), TOTAL);
+  }
+
+  /** Spawn a splash crown of little droplets at the given x (vw) along the bottom. */
+  spawnSplash(overlay, xVw) {
+    if (!overlay.isConnected) return;
+    const splash = document.createElement("div");
+    splash.className = "splash";
+    splash.style.setProperty("--x", xVw.toFixed(2) + "vw");
+    const n = 5 + Math.floor(Math.random() * 3);
+    for (let j = 0; j < n; j++) {
+      const bit = document.createElement("span");
+      const dx = (Math.random() * 2 - 1) * (16 + Math.random() * 20);
+      const peak = -(14 + Math.random() * 18);
+      bit.style.setProperty("--dx", dx.toFixed(1) + "px");
+      bit.style.setProperty("--peak", peak.toFixed(1) + "px");
+      bit.style.setProperty("--sw", (3 + Math.random() * 3).toFixed(1) + "px");
+      bit.style.setProperty("--sdur", (0.45 + Math.random() * 0.25).toFixed(2) + "s");
+      splash.appendChild(bit);
+    }
+    overlay.appendChild(splash);
+    setTimeout(() => splash.remove(), 800);
   }
 
   setDifficulty(value) {
