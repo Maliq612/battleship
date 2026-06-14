@@ -13,21 +13,21 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 2. Sonar audio wouldn't start until the music button was toggled
-**Symptom:** On the welcome/placement screen, the looping sonar track only began playing after you turned Music off and back on — not on your first interaction with the page.
-
-**Cause:** Browsers block audio autoplay until the user makes a gesture. Our "start on first interaction" hook listened only for `pointerdown`/`keydown`. Safari does **not** accept those as a valid media-unlock gesture — it only honors `click`/`touchend`. The Music toggle happened to be a real `click`, which is why that was the one thing that worked. A secondary issue: the hook removed itself even when a blocked attempt failed, so it never retried.
-
-**Fix:** Added `click` and `touchend` to the unlock listeners, and kept the listener alive until a play attempt actually succeeds (a blocked attempt no longer consumes the hook). The sonar now starts on the very first click anywhere on the page.
-
----
-
-## 3. The "P" in the BATTLESHIP wordmark had a flat edge on its bowl
+## 2. The "P" in the BATTLESHIP wordmark had a flat edge on its bowl
 **Symptom:** The curved inner bowl of the "P" rendered with a straight chord across it, while the visually identical "B" looked correct.
 
 **Cause:** A WebKit rendering bug in `-webkit-text-stroke`. On the P's narrow inner curve the stroke self-intersected and closed the loop with a straight line; the B's wider bowls didn't trigger it.
 
 **Fix:** Dropped `-webkit-text-stroke` entirely and rebuilt the dark-red outline + bevel using layered `drop-shadow` filters on the gradient text. Drop-shadows follow the glyph's true alpha shape, so the outline and fill now trace the real letterform curve.
+
+---
+
+## 3. Sonar audio wouldn't start until the music button was toggled
+**Symptom:** On the welcome/placement screen, the looping sonar track only began playing after you turned Music off and back on — not on your first interaction with the page.
+
+**Cause:** Browsers block audio autoplay until the user makes a gesture. Our "start on first interaction" hook listened only for `pointerdown`/`keydown`. Safari does **not** accept those as a valid media-unlock gesture — it only honors `click`/`touchend`. The Music toggle happened to be a real `click`, which is why that was the one thing that worked. A secondary issue: the hook removed itself even when a blocked attempt failed, so it never retried.
+
+**Fix:** Added `click` and `touchend` to the unlock listeners, and kept the listener alive until a play attempt actually succeeds (a blocked attempt no longer consumes the hook). The sonar now starts on the very first click anywhere on the page.
 
 ---
 
