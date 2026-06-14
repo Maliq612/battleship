@@ -73,3 +73,36 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 **Cause:** Not a code bug — Vercel + browser caching was serving an older build for a short window after the push.
 
 **Fix:** Confirmed the deployed asset actually contained the change, then hard-refreshed. Later refined the tagline to scale relative to the wordmark (spanning exactly from the "A" to the "I" of BATTLESHIP) so its size is locked at every screen width.
+
+---
+
+## 9. The Music and SFX buttons overlapped the logo's red ribbon
+**Symptom:** On the battle screen the sound-control buttons sat on top of the logo banner, colliding with the red ribbon graphic instead of sitting clear of it.
+
+**Cause:** The controls were positioned without enough top offset, so at the header's height they overlapped the logo artwork.
+
+**Fix:** Repositioned the Music/SFX controls so they clear the banner, keeping the header artwork unobstructed at every width.
+
+---
+
+## 10. The Prince Mode raindrops rendered as circles, not teardrops
+**Symptom:** The first version of the rain transition showed floating circles falling down the screen rather than teardrop-shaped drops.
+
+**Cause:** Only the round, glossy "head" of each drop was opaque; the tapering streak above it was nearly transparent, so the eye only registered the round head — reading as a circle.
+
+**Fix:** Reshaped each drop into a true teardrop — a rounded bulb that tapers to a pointed tail with a faint trailing streak — then tuned the proportions down (an early pass was too fat and looked like "water balloons") so they read as slim drops running down the screen.
+
+---
+
+## Feature Evolution (v1 → current)
+
+Beyond the individual bug fixes above, the game grew substantially from its first version. This is the high-level arc of how it evolved:
+
+- **Core gameplay (v1):** Single-player Battleship vs. an AI — click-to-place fleet, turn-based firing, hit/miss tracking, ship-sunk detection, and win/lose conditions. Static HTML/CSS/JS, no build step.
+- **Placement UX:** Added drag-and-drop ship placement (from the shipyard *and* the "Your Fleet" tracker), a live placement preview, and mid-drag rotation with `R` — on top of the original click-to-place and Randomize/Clear controls.
+- **Audio:** Looping sonar ambience, hit/miss/sink sound effects, win/lose fanfare, and Music/SFX toggles, with a reliable cross-browser autoplay-unlock on first interaction.
+- **Prince Mode theme:** A purple alternate theme with its own palette and music, a button that scrolls to the logo and toggles its own label/colors ("Prince Mode" ↔ red/yellow "Classic Mode"), and a 4-second purple-teardrop rain transition that plays only when *entering* Prince Mode.
+- **Combat juice:** Explosion burst + screen shake on a hit, water-ripple splash on a miss, and a tilt-and-bubbles sinking effect when a ship goes down.
+- **AI difficulties:** Grew from a basic opponent to five tiers — Easy, Medium, Hard, Impossible, and a fair, no-peeking **Devin AI** that uses probability-density targeting (averages ~44 shots to win).
+- **Stats & persistence:** Shots / Hits / Hit Rate readout plus a **Win Streak** that persists across refreshes via `localStorage` and resets on a loss.
+- **Polish:** Logo wordmark/outline rendering fixes, a transparent logo cutout, responsive tagline scaling, and consistent difficulty-button styling.
