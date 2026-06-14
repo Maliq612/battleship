@@ -4,7 +4,16 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 1. Sonar audio wouldn't start until the music button was toggled
+## 1. The enemy fleet stayed visible after the first game
+**Symptom:** During the first match the enemy board correctly hid its ships, but after restarting for a second game the enemy ships were revealed on the grid — so you could see exactly where to shoot.
+
+**Cause:** The enemy board's `hideShips` flag was set to `true` when the board was first created, but it got flipped off when the fleet was revealed at the end of a game. The restart path (`Game.start()`) rebuilt the board without re-hiding the ships, so the previous game's "reveal" state carried over into the new game.
+
+**Fix:** Reset `enemyBoard.hideShips = true` at the start of every new game, before the board is rebuilt, so each match starts with the enemy fleet hidden again.
+
+---
+
+## 2. Sonar audio wouldn't start until the music button was toggled
 **Symptom:** On the welcome/placement screen, the looping sonar track only began playing after you turned Music off and back on — not on your first interaction with the page.
 
 **Cause:** Browsers block audio autoplay until the user makes a gesture. Our "start on first interaction" hook listened only for `pointerdown`/`keydown`. Safari does **not** accept those as a valid media-unlock gesture — it only honors `click`/`touchend`. The Music toggle happened to be a real `click`, which is why that was the one thing that worked. A secondary issue: the hook removed itself even when a blocked attempt failed, so it never retried.
@@ -13,7 +22,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 2. The "P" in the BATTLESHIP wordmark had a flat edge on its bowl
+## 3. The "P" in the BATTLESHIP wordmark had a flat edge on its bowl
 **Symptom:** The curved inner bowl of the "P" rendered with a straight chord across it, while the visually identical "B" looked correct.
 
 **Cause:** A WebKit rendering bug in `-webkit-text-stroke`. On the P's narrow inner curve the stroke self-intersected and closed the loop with a straight line; the B's wider bowls didn't trigger it.
@@ -22,7 +31,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 3. White fringe around the transparent logo
+## 4. White fringe around the transparent logo
 **Symptom:** After keying out the logo's white background, faint white speckles remained along the red ribbon edges.
 
 **Cause:** The first cutout only removed pure-white pixels, leaving the anti-aliased pixels where the ribbon had blended into the original white background.
@@ -31,7 +40,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 4. Sunk-ship cells didn't turn red in Prince Mode
+## 5. Sunk-ship cells didn't turn red in Prince Mode
 **Symptom:** Normally a sunk ship's cells turn light red. In Prince Mode they stayed purple.
 
 **Cause:** A CSS specificity conflict. The Prince-Mode rule `body.prince-mode .cell` (specificity 0-2-1) outranked the `.cell.sunk` rule (0-2-0), so the purple tile always won.
@@ -40,7 +49,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 5. A leftover highlight "box" appeared after rotating a ship
+## 6. A leftover highlight "box" appeared after rotating a ship
 **Symptom:** On the placement screen, after pressing Rotate, a stale block of highlighted cells lingered on the board until you moved the mouse again.
 
 **Cause:** `toggleOrientation()` flipped the orientation but never redrew the placement preview. The old (pre-rotation) highlighted cells stayed lit until the next `mousemove` re-rendered them.
@@ -49,7 +58,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 6. The drag-and-drop ghost ship didn't rotate with `R`
+## 7. The drag-and-drop ghost ship didn't rotate with `R`
 **Symptom:** While dragging a ship onto the board, pressing `R` rotated the highlighted target cells but the floating ship "ghost" that follows the cursor kept its original orientation, so the two disagreed.
 
 **Cause:** The rotate handler updated the placement orientation (which drives the cell highlight) but never re-rendered the drag-ghost element, which had been built once at drag start.
@@ -58,7 +67,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 7. The Prince Mode rain transition fired in both directions
+## 8. The Prince Mode rain transition fired in both directions
 **Symptom:** The purple rain transition was supposed to play only when *entering* Prince Mode, but it also played when switching back to classic mode.
 
 **Cause:** The button's click handler called the rain transition on every toggle, regardless of which way it was switching.
@@ -67,7 +76,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 8. Deploy/caching confusion on the enlarged tagline
+## 9. Deploy/caching confusion on the enlarged tagline
 **Symptom:** A tagline size change "didn't take" when viewing the preview.
 
 **Cause:** Not a code bug — Vercel + browser caching was serving an older build for a short window after the push.
@@ -76,7 +85,7 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 9. The Music and SFX buttons overlapped the logo's red ribbon
+## 10. The Music and SFX buttons overlapped the logo's red ribbon
 **Symptom:** On the battle screen the sound-control buttons sat on top of the logo banner, colliding with the red ribbon graphic instead of sitting clear of it.
 
 **Cause:** The controls were positioned without enough top offset, so at the header's height they overlapped the logo artwork.
@@ -85,21 +94,13 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
-## 10. The Prince Mode raindrops rendered as circles, not teardrops
+## 11. The Prince Mode raindrops rendered as circles, not teardrops
 **Symptom:** The first version of the rain transition showed floating circles falling down the screen rather than teardrop-shaped drops.
 
 **Cause:** Only the round, glossy "head" of each drop was opaque; the tapering streak above it was nearly transparent, so the eye only registered the round head — reading as a circle.
 
 **Fix:** Reshaped each drop into a true teardrop — a rounded bulb that tapers to a pointed tail with a faint trailing streak — then tuned the proportions down (an early pass was too fat and looked like "water balloons") so they read as slim drops running down the screen.
 
----
-
-## 11. The enemy fleet stayed visible after the first game
-**Symptom:** During the first match the enemy board correctly hid its ships, but after restarting for a second game the enemy ships were revealed on the grid — so you could see exactly where to shoot.
-
-**Cause:** The enemy board's `hideShips` flag was set to `true` when the board was first created, but it got flipped off when the fleet was revealed at the end of a game. The restart path (`Game.start()`) rebuilt the board without re-hiding the ships, so the previous game's "reveal" state carried over into the new game.
-
-**Fix:** Reset `enemyBoard.hideShips = true` at the start of every new game, before the board is rebuilt, so each match starts with the enemy fleet hidden again.
 
 ---
 
