@@ -94,6 +94,15 @@ A short rundown of the notable bugs we hit while building the Battleship game an
 
 ---
 
+## 11. The enemy fleet stayed visible after the first game
+**Symptom:** During the first match the enemy board correctly hid its ships, but after restarting for a second game the enemy ships were revealed on the grid — so you could see exactly where to shoot.
+
+**Cause:** The enemy board's `hideShips` flag was set to `true` when the board was first created, but it got flipped off when the fleet was revealed at the end of a game. The restart path (`Game.start()`) rebuilt the board without re-hiding the ships, so the previous game's "reveal" state carried over into the new game.
+
+**Fix:** Reset `enemyBoard.hideShips = true` at the start of every new game, before the board is rebuilt, so each match starts with the enemy fleet hidden again.
+
+---
+
 ## Feature Evolution (v1 → current)
 
 Beyond the individual bug fixes above, the game grew substantially from its first version. This is the high-level arc of how it evolved:
